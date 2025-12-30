@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Love Clicker - Ultimate Engine</title>
+    <title>Love Clicker - Ultimate Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
@@ -13,114 +13,134 @@
             --primary: #ff0055;
             --secondary: #7000ff;
             --bg: #050505;
-            --card: rgba(255, 255, 255, 0.05);
+            --card: rgba(255, 255, 255, 0.07);
             --gold: #ffd700;
         }
 
         * { box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background-color: var(--bg); color: white; display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden; }
+        body { margin: 0; background-color: var(--bg); color: white; min-height: 100vh; overflow-x: hidden; }
 
-        .app-container { width: 100%; max-width: 480px; padding-bottom: 90px; }
+        .app-container { width: 100%; max-width: 480px; margin: 0 auto; padding-bottom: 100px; }
 
         /* LIVE CHAT ENGINE */
         #chat-container {
-            position: fixed; bottom: 100px; left: 15px; right: 15px;
-            height: 150px; overflow: hidden; z-index: 50;
-            pointer-events: none; mask-image: linear-gradient(to top, black 70%, transparent 100%);
+            position: fixed; bottom: 120px; left: 15px; right: 15px;
+            height: 140px; overflow: hidden; z-index: 50; pointer-events: none;
+            mask-image: linear-gradient(to top, black 60%, transparent 100%);
         }
         .chat-bubble {
-            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(5px);
+            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px);
             padding: 8px 12px; border-radius: 12px; margin-bottom: 6px;
             font-size: 11px; animation: chatIn 0.3s ease forwards;
-            border-left: 3px solid var(--primary); width: fit-content; max-width: 85%;
+            border-left: 3px solid var(--primary); width: fit-content;
         }
         @keyframes chatIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
-        .chat-user { color: var(--primary); font-weight: 800; margin-right: 5px; }
 
-        /* TABS & NAV */
-        .tab-content { display: none; padding: 20px; animation: slideUp 0.5s ease; }
+        /* HEADER & TABS */
+        .timer-header { background: linear-gradient(90deg, var(--primary), var(--secondary)); padding: 12px; text-align: center; font-size: 12px; font-weight: 800; border-radius: 0 0 20px 20px; }
+        .tab-content { display: none; padding: 20px; animation: fadeIn 0.4s ease; }
         .active-tab { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .timer-header { background: linear-gradient(90deg, var(--primary), var(--secondary)); padding: 10px; text-align: center; font-size: 12px; font-weight: 700; border-radius: 0 0 20px 20px; }
+        /* PODIUM PEMENANG */
+        .podium-box { display: flex; justify-content: center; align-items: flex-end; margin: 40px 0 20px; gap: 10px; }
+        .p-unit { text-align: center; position: relative; flex: 1; }
+        .p-img-box {
+            width: 70px; height: 70px; border-radius: 50%; border: 3px solid #444;
+            margin: 0 auto; overflow: hidden; background: #222;
+        }
+        .rank-1 .p-img-box { width: 100px; height: 100px; border-color: var(--gold); box-shadow: 0 0 20px rgba(255,215,0,0.4); }
+        .p-img-box img { width: 100%; height: 100%; object-fit: cover; }
+        .p-name { font-size: 11px; margin-top: 8px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .p-prize { font-size: 9px; color: var(--gold); font-weight: 800; }
 
-        /* PODIUM ENGINE */
-        .podium { display: flex; justify-content: center; align-items: flex-end; margin: 30px 0; gap: 8px; }
-        .p-item { text-align: center; position: relative; }
-        .p-1 { order: 2; } .p-2 { order: 1; } .p-3 { order: 3; }
-        .p-img { width: 60px; height: 60px; border-radius: 50%; border: 3px solid #444; object-fit: cover; }
-        .p-1 .p-img { width: 90px; height: 90px; border-color: var(--gold); box-shadow: 0 0 20px rgba(255,215,0,0.3); }
-        .crown { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 25px; }
+        /* PROFILE */
+        .profile-card { background: var(--card); padding: 30px; border-radius: 25px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        .profile-pic-container { position: relative; width: 130px; height: 130px; margin: 0 auto; }
+        .profile-pic { width: 100%; height: 100%; border-radius: 50%; border: 4px solid var(--primary); object-fit: cover; }
+        .edit-icon { position: absolute; bottom: 5px; right: 5px; background: var(--primary); padding: 8px; border-radius: 50%; cursor: pointer; font-size: 14px; }
 
-        /* PROFILE & BUTTONS */
-        .main-profile-img { width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--primary); object-fit: cover; }
-        .btn-main { width: 100%; padding: 15px; border-radius: 15px; border: none; background: var(--primary); color: white; font-weight: 800; cursor: pointer; margin-top: 10px; }
-        .score-big { font-size: 60px; font-weight: 800; text-align: center; color: var(--primary); }
+        /* BUTTONS & LIST */
+        .score-num { font-size: 70px; font-weight: 800; color: var(--primary); text-align: center; margin: 20px 0; }
+        .btn-main { width: 100%; padding: 18px; border-radius: 18px; border: none; background: var(--primary); color: white; font-weight: 800; cursor: pointer; margin-top: 10px; }
+        .btn-save { background: white; color: black; }
+        .rank-item { background: var(--card); padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: rgba(20, 20, 25, 0.95); display: flex; justify-content: space-around; padding: 15px 0; border-radius: 25px 25px 0 0; z-index: 100; }
-        .nav-item { color: #555; text-align: center; cursor: pointer; font-size: 11px; }
-        .nav-item.active { color: var(--primary); }
+        /* NAV */
+        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: #111; display: flex; justify-content: space-around; padding: 15px 0; border-radius: 25px 25px 0 0; z-index: 100; border-top: 1px solid #222; }
+        .nav-link { color: #555; text-align: center; cursor: pointer; font-size: 11px; flex: 1; }
+        .nav-link.active { color: var(--primary); }
+        
         .hidden { display: none; }
-        input { width: 100%; background: rgba(255,255,255,0.05); border: none; padding: 12px; border-radius: 12px; color: white; margin-bottom: 8px; }
+        input { width: 100%; background: #222; border: none; padding: 15px; border-radius: 12px; color: white; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
     <div class="app-container">
         <div id="chat-container" class="hidden"></div>
-        <div class="timer-header hidden" id="top-timer">🕒 RESET: <span id="countdown">00:00:00</span></div>
+        <div class="timer-header hidden" id="header-top">🕒 RESET HADIAH: <span id="timer">00:00:00</span></div>
 
-        <div id="tab-auth" class="tab-content active-tab">
-            <h1 style="text-align:center; margin-top:50px;">LOVE <span style="color:var(--primary)">CLICKER</span></h1>
-            <div style="background:var(--card); padding:20px; border-radius:20px;">
+        <div id="tab-login" class="tab-content active-tab">
+            <h1 style="text-align:center; margin-top:60px;">LOVE <span style="color:var(--primary)">CLICKER</span></h1>
+            <div class="profile-card">
                 <input type="email" id="email" placeholder="Email">
-                <input type="password" id="password" placeholder="Password">
-                <input type="text" id="username" placeholder="Nama Panggilan">
-                <button class="btn-main" onclick="handleLogin()">MASUK</button>
-                <button onclick="handleRegister()" style="background:none; border:none; color:#777; width:100%; margin-top:10px;">Daftar Akun Baru</button>
+                <input type="password" id="pass" placeholder="Password">
+                <input type="text" id="uname" placeholder="Nama Panggilan">
+                <button class="btn-main" onclick="doLogin()">MASUK</button>
+                <button onclick="doRegister()" style="background:none; border:none; color:#666; width:100%; margin-top:15px;">Daftar Akun Baru</button>
             </div>
         </div>
 
         <div id="tab-game" class="tab-content">
-            <div class="score-big" id="score">0</div>
-            <div style="text-align:center; margin:40px 0;"><button id="love-btn" style="font-size:100px; background:none; border:none; cursor:pointer;">💖</button></div>
-            <button class="btn-main" onclick="saveScore()" style="background:white; color:black;">💾 SIMPAN ONLINE</button>
-            <button onclick="askQuestion()" style="background:none; border:none; color:#555; width:100%; margin-top:10px;">Klaim Bonus Harian</button>
+            <div class="score-num" id="game-score">0</div>
+            <div style="text-align:center; margin:50px 0;"><button id="click-btn" style="font-size:120px; background:none; border:none; cursor:pointer;">💖</button></div>
+            <button class="btn-main btn-save" onclick="syncData()">💾 SIMPAN SKOR ONLINE</button>
         </div>
 
         <div id="tab-winner" class="tab-content">
-            <h3 style="text-align:center;">🏆 PEMENANG HADIAH</h3>
-            <div style="font-size:10px; text-align:center; background:rgba(255,215,0,0.1); padding:10px; border-radius:10px; border:1px solid var(--gold); margin-bottom:15px;">
-                1: 1JT 💰 | 2: 100K 💰 | 3: 50K 💰 | 4+: 5K 💰
+            <h2 style="text-align:center;">PODIUM JUARA</h2>
+            <div class="podium-box">
+                <div class="p-unit rank-2">
+                    <div class="p-img-box"><img src="" id="top2-img"></div>
+                    <div class="p-name" id="top2-name">...</div>
+                    <div class="p-prize">100K 💰</div>
+                </div>
+                <div class="p-unit rank-1">
+                    <span style="position:absolute; top:-25px; left:50%; transform:translateX(-50%); font-size:30px;">👑</span>
+                    <div class="p-img-box"><img src="" id="top1-img"></div>
+                    <div class="p-name" id="top1-name" style="font-weight:800;">...</div>
+                    <div class="p-prize">1 JUTA 💰</div>
+                </div>
+                <div class="p-unit rank-3">
+                    <div class="p-img-box"><img src="" id="top3-img"></div>
+                    <div class="p-name" id="top3-name">...</div>
+                    <div class="p-prize">50K 💰</div>
+                </div>
             </div>
-            <div class="podium">
-                <div class="p-item p-2"><img src="" id="p2-img" class="p-img"><div id="p2-name" style="font-size:10px;">...</div></div>
-                <div class="p-item p-1"><div class="crown">👑</div><img src="" id="p1-img" class="p-img"><div id="p1-name" style="font-size:12px; font-weight:800;">...</div></div>
-                <div class="p-item p-3"><img src="" id="p3-img" class="p-img"><div id="p3-name" style="font-size:10px;">...</div></div>
-            </div>
-            <div id="rank-list"></div>
+            <div id="other-ranks"></div>
         </div>
 
         <div id="tab-profile" class="tab-content">
-            <div style="text-align:center;">
-                <div style="position:relative; display:inline-block;">
-                    <img src="" id="my-photo" class="main-profile-img">
-                    <label style="position:absolute; bottom:0; right:0; background:var(--primary); padding:8px; border-radius:50%; cursor:pointer;">
-                        📸<input type="file" id="file-input" accept="image/*" style="display:none;">
+            <div class="profile-card">
+                <div class="profile-pic-container">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" id="my-pic" class="profile-pic">
+                    <label class="edit-icon">
+                        📸<input type="file" id="upload-pic" accept="image/*" style="display:none;">
                     </label>
                 </div>
-                <h2 id="display-name" style="margin-top:15px;">User</h2>
-                <div style="background:var(--card); padding:20px; border-radius:20px; text-align:left; margin-top:20px;">
-                    <div style="display:flex; justify-content:space-between;"><span>Total Poin</span><b id="prof-score" style="color:var(--primary)">0</b></div>
-                    <button class="btn-main" style="background:none; border:1px solid #333; color:red;" onclick="auth.signOut(); location.reload();">LOGOUT</button>
+                <h2 id="my-name" style="margin-top:15px;">User</h2>
+                <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:15px; margin-top:20px; text-align:left;">
+                    <div style="display:flex; justify-content:space-between;"><span>Saldo Poin</span><b style="color:var(--primary)" id="my-total-score">0</b></div>
                 </div>
+                <button class="btn-main" style="background:none; border:1px solid #333; color:#ff4444; margin-top:30px;" onclick="auth.signOut(); location.reload();">LOGOUT</button>
             </div>
         </div>
 
-        <div class="bottom-nav hidden" id="navbar">
-            <div class="nav-item active" onclick="switchTab('tab-game', this)">🎮<span>Main</span></div>
-            <div class="nav-item" onclick="switchTab('tab-winner', this)">🏆<span>Juara</span></div>
-            <div class="nav-item" onclick="switchTab('tab-profile', this)">👤<span>Profil</span></div>
+        <div class="bottom-nav hidden" id="nav-bar">
+            <div class="nav-link active" onclick="goTab('tab-game', this)">🎮<span>Main</span></div>
+            <div class="nav-link" onclick="goTab('tab-winner', this)">🏆<span>Winner</span></div>
+            <div class="nav-link" onclick="goTab('tab-profile', this)">👤<span>Profil</span></div>
         </div>
     </div>
 
@@ -136,101 +156,108 @@
         };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.firestore();
-        let currentScore = 0; let currentUser = null; 
-        let base64Image = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+        let userScore = 0; let activeUser = null; 
+        let userImg = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+
+        // TAB ENGINE
+        function goTab(id, el) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+            document.getElementById(id).classList.add('active-tab'); el.classList.add('active');
+            if(id === 'tab-winner') fetchLeaderboard();
+        }
 
         // CHAT ENGINE
-        const names = ["Ripal", "Adit", "Siska", "Dika", "Putri", "Rey", "Lina"];
-        const msgs = ["Ayo kejar rank 1!", "Hadiahnya gede banget", "Foto lo keren", "Info bonus!", "Semangat klik!"];
-        let cCount = 0; let cInt;
-        function startChat() {
-            cInt = setInterval(() => {
-                if(cCount < 20) {
-                    const div = document.createElement('div'); div.className = 'chat-bubble';
-                    div.innerHTML = `<span class="chat-user">${names[Math.floor(Math.random()*names.length)]}:</span>${msgs[Math.floor(Math.random()*msgs.length)]}`;
-                    document.getElementById('chat-container').appendChild(div);
+        let cLog = 0; let cTimer;
+        const fakeU = ["Ripal", "Adit", "Siska", "Dika", "Putri", "Rey", "Lina", "Bocil"];
+        const fakeM = ["Kapan hadiah cair?", "Rank 1 kenceng banget!", "Otw sejuta koin", "Semangat klik!", "Foto lu keren bro"];
+        function runChat() {
+            cTimer = setInterval(() => {
+                if(cLog < 20) {
+                    const b = document.createElement('div'); b.className = 'chat-bubble';
+                    b.innerHTML = `<span style="color:var(--primary); font-weight:800">${fakeU[Math.floor(Math.random()*fakeU.length)]}:</span> ${fakeM[Math.floor(Math.random()*fakeM.length)]}`;
+                    document.getElementById('chat-container').appendChild(b);
                     if(document.getElementById('chat-container').children.length > 4) document.getElementById('chat-container').removeChild(document.getElementById('chat-container').firstChild);
-                    cCount++;
-                } else { clearInterval(cInt); setTimeout(() => { cCount=0; startChat(); }, 10000); }
+                    cLog++;
+                } else { clearInterval(cTimer); setTimeout(() => { cLog=0; runChat(); }, 10000); }
             }, 1500);
         }
 
-        function switchTab(id, el) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(id).classList.add('active-tab'); el.classList.add('active');
-            if(id === 'tab-winner') loadLeaderboard();
-        }
-
-        document.getElementById('file-input').addEventListener('change', function(e) {
-            const file = e.target.files[0]; const reader = new FileReader();
-            reader.onloadend = () => { base64Image = reader.result; document.getElementById('my-photo').src = base64Image; };
-            if(file) reader.readAsDataURL(file);
+        // UPLOAD ENGINE
+        document.getElementById('upload-pic').addEventListener('change', function(e) {
+            const f = e.target.files[0]; const r = new FileReader();
+            r.onloadend = () => { userImg = r.result; document.getElementById('my-pic').src = userImg; };
+            if(f) r.readAsDataURL(f);
         });
 
+        // AUTH & SYNC
         auth.onAuthStateChanged(user => {
             if (user) {
-                currentUser = user; document.getElementById('tab-auth').classList.remove('active-tab');
+                activeUser = user;
+                document.getElementById('tab-login').classList.remove('active-tab');
                 document.getElementById('tab-game').classList.add('active-tab');
-                document.getElementById('navbar').classList.remove('hidden');
-                document.getElementById('top-timer').classList.remove('hidden');
+                document.getElementById('nav-bar').classList.remove('hidden');
+                document.getElementById('header-top').classList.remove('hidden');
                 document.getElementById('chat-container').classList.remove('hidden');
-                loadUserData(); startChat();
+                loadData(); runChat();
             }
         });
 
-        document.getElementById('love-btn').onclick = () => { currentScore++; document.getElementById('score').innerText = currentScore; };
+        document.getElementById('click-btn').onclick = () => { userScore++; document.getElementById('game-score').innerText = userScore; };
 
-        async function loadUserData() {
-            const doc = await db.collection("users").doc(currentUser.uid).get();
+        async function loadData() {
+            const doc = await db.collection("users").doc(activeUser.uid).get();
             if (doc.exists) {
-                const d = doc.data(); currentScore = d.score || 0; base64Image = d.photo || base64Image;
-                document.getElementById('score').innerText = currentScore;
-                document.getElementById('prof-score').innerText = currentScore;
-                document.getElementById('display-name').innerText = d.name;
-                document.getElementById('my-photo').src = base64Image;
+                const d = doc.data(); userScore = d.score || 0; userImg = d.photo || userImg;
+                document.getElementById('game-score').innerText = userScore;
+                document.getElementById('my-total-score').innerText = userScore;
+                document.getElementById('my-name').innerText = d.name;
+                document.getElementById('my-pic').src = userImg;
             }
         }
 
-        async function saveScore() {
-            await db.collection("users").doc(currentUser.uid).set({ name: document.getElementById('display-name').innerText, score: currentScore, photo: base64Image }, { merge: true });
-            alert("DATA TERSIMPAN!");
+        async function syncData() {
+            await db.collection("users").doc(activeUser.uid).set({ 
+                name: document.getElementById('my-name').innerText, 
+                score: userScore, photo: userImg 
+            }, { merge: true });
+            alert("SKOR & FOTO TERSIMPAN!");
         }
 
-        function askQuestion() {
-            let q = prompt("Ketik 'SAYANG':");
-            if(q === "SAYANG") { currentScore += 50; document.getElementById('score').innerText = currentScore; }
-        }
-
-        async function loadLeaderboard() {
+        async function fetchLeaderboard() {
             const snap = await db.collection("users").orderBy("score", "desc").limit(10).get();
-            let p = []; snap.forEach(d => p.push(d.data()));
-            if(p[0]) { document.getElementById('p1-img').src = p[0].photo; document.getElementById('p1-name').innerText = p[0].name; }
-            if(p[1]) { document.getElementById('p2-img').src = p[1].photo; document.getElementById('p2-name').innerText = p[1].name; }
-            if(p[2]) { document.getElementById('p3-img').src = p[2].photo; document.getElementById('p3-name').innerText = p[2].name; }
+            let players = []; snap.forEach(d => players.push(d.data()));
+            
+            // Set Podium dengan Foto
+            const defPic = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+            if(players[0]) { document.getElementById('top1-img').src = players[0].photo || defPic; document.getElementById('top1-name').innerText = players[0].name; }
+            if(players[1]) { document.getElementById('top2-img').src = players[1].photo || defPic; document.getElementById('top2-name').innerText = players[1].name; }
+            if(players[2]) { document.getElementById('top3-img').src = players[2].photo || defPic; document.getElementById('top3-name').innerText = players[2].name; }
+
             let h = "";
-            for(let i=3; i<p.length; i++) {
-                h += `<div style="background:var(--card); padding:15px; border-radius:12px; display:flex; justify-content:space-between; margin-bottom:8px; font-size:12px;">
-                    <div>#${i+1} <img src="${p[i].photo}" style="width:25px; height:25px; border-radius:50%; vertical-align:middle; margin:0 5px;"> ${p[i].name}</div>
-                    <b>${p[i].score}</b>
+            for(let i=3; i<players.length; i++) {
+                h += `<div class="rank-item">
+                    <span>#${i+1} <img src="${players[i].photo || defPic}" style="width:30px; height:30px; border-radius:50%; vertical-align:middle; margin:0 8px;"> ${players[i].name}</span>
+                    <b>${players[i].score}</b>
                 </div>`;
             }
-            document.getElementById('rank-list').innerHTML = h;
+            document.getElementById('other-ranks').innerHTML = h;
         }
 
-        function handleLogin() { auth.signInWithEmailAndPassword(document.getElementById('email').value, document.getElementById('password').value); }
-        function handleRegister() {
-            const n = document.getElementById('username').value;
-            auth.createUserWithEmailAndPassword(document.getElementById('email').value, document.getElementById('password').value).then(u => {
-                u.user.updateProfile({displayName: n});
-                db.collection("users").doc(u.user.uid).set({name: n, score: 0, photo: base64Image});
+        function doLogin() { auth.signInWithEmailAndPassword(document.getElementById('email').value, document.getElementById('pass').value); }
+        function doRegister() {
+            const n = document.getElementById('uname').value;
+            auth.createUserWithEmailAndPassword(document.getElementById('email').value, document.getElementById('pass').value).then(u => {
+                db.collection("users").doc(u.user.uid).set({name: n, score: 0, photo: userImg});
             });
         }
+
+        // RESET TIMER
         setInterval(() => {
             const d = new Date(); const t = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1);
             const diff = t - d; const h = Math.floor(diff/3600000); const m = Math.floor((diff%3600000)/60000); const s = Math.floor((diff%60000)/1000);
-            document.getElementById('countdown').innerText = `${h}:${m}:${s}`;
+            document.getElementById('timer').innerText = `${h}:${m}:${s}`;
         }, 1000);
     </script>
 </body>
-</html>
+                    </html>
