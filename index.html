@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Love Clicker - Ultra World V7</title>
+    <title>Love Clicker - Ultra World V8</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
@@ -16,16 +16,17 @@
             --bg: #08090d;
             --card: rgba(255, 255, 255, 0.05);
             --gold: #ffd700;
+            --tg-color: #0088cc;
         }
 
         * { box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background-color: var(--bg); color: white; min-height: 100vh; overflow-x: hidden; }
 
-        .app-container { width: 100%; max-width: 480px; margin: 0 auto; padding-bottom: 110px; }
+        .app-container { width: 100%; max-width: 480px; margin: 0 auto; padding-bottom: 110px; position: relative; }
 
-        /* LIVE CHAT ENGINE 50+ VARIATIONS */
+        /* LIVE CHAT ENGINE */
         #chat-container {
-            position: fixed; bottom: 120px; left: 15px; right: 15px;
+            position: fixed; bottom: 125px; left: 15px; right: 15px;
             height: 120px; overflow: hidden; z-index: 50; pointer-events: none;
             mask-image: linear-gradient(to top, black 75%, transparent 100%);
         }
@@ -38,6 +39,16 @@
         }
         @keyframes chatSlide { from { opacity: 0; transform: translateX(-15px); } to { opacity: 1; transform: translateX(0); } }
 
+        /* TELEGRAM FAB */
+        #telegram-fab {
+            position: fixed; bottom: 110px; right: 15px; background: var(--tg-color);
+            color: white; padding: 10px 15px; border-radius: 50px; display: flex;
+            align-items: center; gap: 8px; text-decoration: none; z-index: 1000;
+            box-shadow: 0 8px 20px rgba(0, 136, 204, 0.4); animation: bounce 2s infinite;
+            font-weight: 800; font-size: 11px; border: 1px solid rgba(255,255,255,0.2);
+        }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
         /* HEADER & TABS */
         .timer-header { background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 15px; text-align: center; font-size: 11px; font-weight: 800; color: var(--primary); letter-spacing: 1px; }
         .tab-content { display: none; padding: 15px; animation: fadeIn 0.4s ease; }
@@ -47,104 +58,104 @@
         /* PODIUM */
         .podium-box { display: flex; justify-content: center; align-items: flex-end; margin: 40px 0 20px; gap: 8px; }
         .p-unit { text-align: center; position: relative; flex: 1; }
-        .p-img-box { width: 70px; height: 70px; border-radius: 50%; border: 3px solid #333; margin: 0 auto; overflow: hidden; background: #1a1a1a; }
-        .rank-1 .p-img-box { width: 95px; height: 95px; border-color: var(--gold); box-shadow: 0 0 25px rgba(255,215,0,0.3); }
+        .p-img-box { width: 65px; height: 65px; border-radius: 50%; border: 3px solid #333; margin: 0 auto; overflow: hidden; background: #1a1a1a; }
+        .rank-1 .p-img-box { width: 90px; height: 90px; border-color: var(--gold); box-shadow: 0 0 25px rgba(255,215,0,0.3); }
         .p-img-box img { width: 100%; height: 100%; object-fit: cover; }
         .prize-tag { font-size: 9px; font-weight: 800; color: var(--gold); margin-top: 4px; display: block; }
-        
-        /* LIST LEADERBOARD */
+
+        /* LIST */
         .list-card {
             background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
             padding: 12px 15px; border-radius: 18px; display: flex; justify-content: space-between;
             align-items: center; margin-bottom: 10px;
         }
-        .user-info { display: flex; align-items: center; gap: 12px; }
-        .user-info img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 1px solid #444; }
-        .user-name { font-size: 12px; font-weight: 600; width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .user-score { font-weight: 800; color: var(--primary); font-size: 14px; }
+        .user-info { display: flex; align-items: center; gap: 10px; }
+        .user-info img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
+        .user-name { font-size: 12px; font-weight: 600; width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .user-score { font-weight: 800; color: var(--primary); font-size: 13px; }
 
-        /* GAME */
-        .score-val { font-size: 75px; font-weight: 800; text-align: center; margin: 10px 0; background: linear-gradient(#fff, #999); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        #click-btn { font-size: 100px; background: none; border: none; cursor: pointer; transition: 0.1s; display: block; margin: 0 auto; filter: drop-shadow(0 0 15px rgba(255,0,85,0.2)); }
-        #click-btn:active { transform: scale(0.85); }
-        .btn-action { width: 100%; padding: 18px; border-radius: 20px; border: none; font-weight: 800; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-
-        /* NAV */
-        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 400px; background: rgba(10,10,15,0.95); backdrop-filter: blur(20px); display: flex; justify-content: space-around; padding: 14px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.08); z-index: 100; }
-        .nav-link { color: #444; text-align: center; cursor: pointer; font-size: 11px; flex: 1; }
+        /* CORE UI */
+        .score-val { font-size: 70px; font-weight: 800; text-align: center; margin: 10px 0; background: linear-gradient(#fff, #888); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        #click-btn { font-size: 100px; background: none; border: none; cursor: pointer; display: block; margin: 0 auto; transition: 0.1s; filter: drop-shadow(0 0 15px rgba(255,0,85,0.2)); }
+        #click-btn:active { transform: scale(0.8); }
+        .btn-action { width: 100%; padding: 18px; border-radius: 20px; border: none; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 400px; background: rgba(10,10,15,0.95); backdrop-filter: blur(20px); display: flex; padding: 14px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.08); z-index: 100; }
+        .nav-link { color: #444; text-align: center; flex: 1; cursor: pointer; font-size: 11px; }
         .nav-link.active { color: var(--primary); }
-
         input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 15px; color: white; margin-bottom: 10px; outline: none; }
-        .hidden { display: none; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
     <div class="app-container">
         <div id="chat-container" class="hidden"></div>
-        <div class="timer-header hidden" id="header-top">⚡ RESET IN: <span id="timer">00:00:00</span></div>
+        <div class="timer-header hidden" id="header-top">⚡ RESET: <span id="timer">00:00:00</span></div>
+
+        <a href="https://t.me/+iZpMRuNJ2PM4MTE1" target="_blank" id="telegram-fab" class="hidden">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.11.02-1.93 1.23-5.46 3.62-.51.35-.98.52-1.4.51-.46-.01-1.35-.26-2.01-.48-.81-.27-1.45-.42-1.39-.88.03-.24.37-.48 1.02-.73 4-.1.74 7.53-5.15 9.73-1.25.35-2.61.54-3.97.54z"/></svg>
+            <span>JOIN GRUP</span>
+        </a>
 
         <div id="tab-login" class="tab-content active-tab">
             <div style="text-align:center; margin-top:80px;">
-                <h1 style="font-size:35px; margin:0; letter-spacing:-1px;">LOVE<span style="color:var(--primary)">.</span>CLICKER</h1>
-                <div style="background:var(--card); padding:30px; border-radius:30px; margin-top:30px; border:1px solid rgba(255,255,255,0.05);">
+                <h1 style="font-size:35px; margin:0;">LOVE<span style="color:var(--primary)">.</span>CLICKER</h1>
+                <div style="background:var(--card); padding:30px; border-radius:30px; margin-top:30px;">
                     <input type="email" id="email" placeholder="Email">
                     <input type="password" id="pass" placeholder="Password">
                     <input type="text" id="uname" placeholder="Nama Panggilan">
-                    <button class="btn-action" onclick="doLogin()" style="background:var(--primary); color:white;">MULAI BERMAIN</button>
-                    <button onclick="doRegister()" style="background:none; border:none; color:#444; margin-top:20px; font-size:11px;">Belum punya akun? Daftar</button>
+                    <button class="btn-action" onclick="doLogin()" style="background:var(--primary); color:white;">MASUK SEKARANG</button>
+                    <button onclick="doRegister()" style="background:none; border:none; color:#444; margin-top:15px; font-size:11px;">Daftar Akun Baru</button>
                 </div>
             </div>
         </div>
 
         <div id="tab-game" class="tab-content">
-            <p style="text-align:center; color:var(--primary); font-size:10px; font-weight:800; letter-spacing:2px; margin-top:20px;">CURRENT BALANCE</p>
             <div class="score-val" id="game-score">0</div>
             <div style="margin:40px 0;"><button id="click-btn">💖</button></div>
-            <button class="btn-action" onclick="syncData()" style="background:white; color:black;">💾 SIMPAN DATA KE CLOUD</button>
+            <button class="btn-action" onclick="syncData()" style="background:white; color:black;">💾 SIMPAN PROGRESS</button>
         </div>
 
         <div id="tab-winner" class="tab-content">
-            <h3 style="text-align:center; letter-spacing:1px; margin-bottom:0;">WORLD RANKING</h3>
-            <p style="text-align:center; font-size:10px; color:#444; margin-bottom:20px;">Top 50 Players</p>
+            <h3 style="text-align:center; letter-spacing:1px; margin:0;">LEADERBOARD</h3>
             <div class="podium-box">
                 <div class="p-unit rank-2">
                     <div class="p-img-box"><img src="" id="top2-img"></div>
-                    <div style="font-size:10px; margin-top:10px;" id="top2-name">...</div>
+                    <div style="font-size:10px; margin-top:5px;" id="top2-name">...</div>
                     <span class="prize-tag">Rp 100k</span>
                     <div style="font-size:11px; color:var(--primary); font-weight:800;" id="top2-coin">0</div>
                 </div>
                 <div class="p-unit rank-1">
-                    <span style="position:absolute; top:-25px; left:50%; transform:translateX(-50%); font-size:25px;">👑</span>
+                    <span style="font-size:20px;">👑</span>
                     <div class="p-img-box"><img src="" id="top1-img"></div>
-                    <div style="font-size:12px; margin-top:10px; font-weight:800;" id="top1-name">...</div>
+                    <div style="font-size:11px; margin-top:5px; font-weight:800;" id="top1-name">...</div>
                     <span class="prize-tag">Rp 1 Juta</span>
-                    <div style="font-size:13px; color:var(--primary); font-weight:800;" id="top1-coin">0</div>
+                    <div style="font-size:12px; color:var(--primary); font-weight:800;" id="top1-coin">0</div>
                 </div>
                 <div class="p-unit rank-3">
                     <div class="p-img-box"><img src="" id="top3-img"></div>
-                    <div style="font-size:10px; margin-top:10px;" id="top3-name">...</div>
+                    <div style="font-size:10px; margin-top:5px;" id="top3-name">...</div>
                     <span class="prize-tag">Rp 50k</span>
                     <div style="font-size:11px; color:var(--primary); font-weight:800;" id="top3-coin">0</div>
                 </div>
             </div>
-            <div id="list-container" style="max-height: 400px; overflow-y: auto;"></div>
+            <div id="list-container" style="max-height: 350px; overflow-y: auto; padding-right: 5px;"></div>
         </div>
 
         <div id="tab-profile" class="tab-content">
             <div style="background:var(--card); padding:30px; border-radius:30px; text-align:center;">
-                <div style="position:relative; display:inline-block; margin-bottom:15px;">
-                    <img src="" id="my-pic" style="width:120px; height:120px; border-radius:50%; border:3px solid var(--primary); object-fit:cover;">
-                    <label style="position:absolute; bottom:5px; right:5px; background:var(--primary); padding:8px; border-radius:50%; cursor:pointer;">
+                <div style="position:relative; display:inline-block;">
+                    <img src="" id="my-pic" style="width:110px; height:110px; border-radius:50%; border:3px solid var(--primary); object-fit:cover;">
+                    <label style="position:absolute; bottom:0; right:0; background:var(--primary); padding:8px; border-radius:50%; cursor:pointer;">
                         📸<input type="file" id="upload-pic" accept="image/*" style="display:none;">
                     </label>
                 </div>
-                <h2 id="my-name" style="margin:5px 0;">Player</h2>
-                <div style="background:rgba(255,255,255,0.02); padding:20px; border-radius:20px; margin-top:20px;">
-                    <span style="font-size:11px; color:#444;">SALDO KOIN</span><br>
-                    <span style="font-size:24px; font-weight:800; color:var(--primary);" id="my-total-score">0</span>
+                <h2 id="my-name">User</h2>
+                <div style="background:rgba(255,255,255,0.02); padding:15px; border-radius:20px;">
+                    <span style="font-size:11px; color:#444;">BALANCE</span><br>
+                    <span style="font-size:22px; font-weight:800; color:var(--primary);" id="my-total-score">0</span>
                 </div>
-                <button onclick="auth.signOut(); location.reload();" style="background:none; border:1px solid #222; color:#ff4444; padding:12px 30px; border-radius:15px; margin-top:30px; cursor:pointer;">KELUAR AKUN</button>
+                <button onclick="auth.signOut(); location.reload();" style="background:none; border:1px solid #222; color:#ff4444; padding:10px 25px; border-radius:15px; margin-top:20px;">LOGOUT</button>
             </div>
         </div>
 
@@ -156,7 +167,7 @@
     </div>
 
     <script>
-        // --- CONFIG ---
+        // --- FIREBASE ---
         const firebaseConfig = {
           apiKey: "AIzaSyCyMnLJJo2QTZZ7cBGigtj0BNNfqjHngvU",
           authDomain: "loveclicker-86b7e.firebaseapp.com",
@@ -171,61 +182,46 @@
         let userScore = 0; let activeUser = null; 
         let userImg = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
 
-        // --- 50 BOTS WITH RANDOM IMAGES ---
+        // --- DATABASE 50 BOTS ---
         const botNames = [
-            "Siska Cantikk ✨", "Budi_Jagoan", "Andi_Wijaya", "Putri_Lestari 💖", "Kucing_Oren 🐈", 
-            "Kang_Bakso", "Dewi_Malam", "Riko_Simanjuntak", "Santi_Santuy", "Mawar_Hitam 🌹",
-            "Dina_Imuttt", "Eko_Pratama", "Lina_Marlina", "Asep_Knalpot", "Indomie_Rebus 🍜",
-            "Mbak_Seblak", "Tukang_Bubur", "Agus_Kotak", "Siti_Aminah", "Rina_Cantik ✨",
-            "Bayu_Samudra", "Hantu_Koin 👻", "Dedi_Keren", "Maya_Sari", "Nina_Bucin",
-            "Joko_Kendil", "Sari_Roti", "Fajar_Sadboy 😢", "Bunga_Desa", "Kucing_Stress",
-            "Radit_Ganteng", "Siska_Gemoy", "Wawan_Racing", "Ani_Suryani", "Tono_Listrik",
-            "Putra_Petir ⚡", "Neng_Elis", "Abang_Gojek", "Bocil_Kematian", "Dewa_Clicker",
-            "Ratu_Poin", "Si_Paling_Klik", "Tukang_Kayu", "Meme_Lover", "Zaky_Gamer",
-            "Vina_Kawai", "Rizky_Febian", "Sule_Prik", "Andre_Taulany", "Mister_Bean"
+            "Siska Gemoy ✨", "Andi_Wijaya", "Kucing_Oren 🐈", "Putri_Salju", "Kang_Seblak", 
+            "Dewi_Malam", "Budi_Jagoan", "Riko_Simanjuntak", "Santi_Santuy", "Mawar_Hitam",
+            "Dina_Imuttt", "Indomie_Telur", "Asep_Knalpot", "Lina_Cantik", "Tukang_Bubur",
+            "Bocil_FF", "Mister_Prik", "Ratu_Poin", "Si_Paling_Klik", "Abang_Gojek",
+            "Hantu_Koin", "Dedi_Keren", "Maya_Sari", "Nina_Bucin", "Joko_Kendil",
+            "Sari_Roti", "Fajar_Sadboy", "Bunga_Desa", "Kucing_Stress", "Radit_Ganteng",
+            "Wawan_Racing", "Ani_Suryani", "Tono_Listrik", "Putra_Petir", "Neng_Elis",
+            "Zaky_Gamer", "Vina_Kawai", "Rizky_Febian", "Sule_Prik", "Meme_King",
+            "Es_Teh_Plastik", "Bakso_Urat", "Cewe_Matre", "Pejuang_Mahar", "Diva_Gamer",
+            "Rina_Wati", "Samsul_Hadi", "Gogon_Srimulat", "Nunung_Lucu", "Tukul_Arwana"
         ];
 
-        let botDatabase = botNames.map((name, index) => ({
-            name: name,
-            score: Math.floor(Math.random() * 15000) + 500,
-            photo: `https://picsum.photos/150?random=${index}`
+        let botDatabase = botNames.map((name, i) => ({
+            name: name, score: Math.floor(Math.random() * 12000) + 200, photo: `https://picsum.photos/150?random=${i}`
         }));
 
-        // --- 50 LIVE CHAT MESSAGES ---
-        const chatPool = [
-            "Gas poll koinnya!", "Poin gue disalip siska :(", "Gila rank 1 kenceng amat!", "Semangat pejuang hadiah!",
-            "Info dana kaget dong", "Baru klik 100 udah pegel", "Gue bakal jadi juara 1!", "Mantap gamenya",
-            "Kapan reset hadiahnya?", "Laper pengen seblak", "Halo semua!", "Ada yang dari Jakarta?",
-            "Semangat klik kawan", "Hampir tembus 10k!", "Otw ranking atas", "Admin bagi bonus woi",
-            "Kucing gue ikut main wkwk", "Lagi kerja sambil klik", "Sumpah nagih banget", "Poin gue ilang satu!",
-            "Jangan lupa save koinnya", "Rank 50 juga gapapa", "Bismillah menang 1 juta", "Siapa yang paling jago?",
-            "Tangan gue tremor", "Baru bangun langsung klik", "Siska cantik banget fotonya", "Gue ranking berapa ya?",
-            "Mabar yuk!", "Koin gue udah 5000", "Semangat terus pantang menyerah", "Hari ini cerah ya",
-            "Lagi nunggu reset", "Ada yang tau cara cepet?", "Klik terus sampe hp panas", "Mantul abis!",
-            "Gaskeun lur!", "Wih koinnya banyak amat", "Iri bilang bos!", "Salut sama rank 1",
-            "Jangan lupa makan ya", "Poin meluncurrrr", "Asik dapet ranking", "Gue bakal nyalip budi",
-            "Dikit lagi tembus!", "Horeee naik peringkat", "Capek tapi seru", "Info reset jam berapa?",
-            "Siapa nih yang juara?", "Gaskeun kawan-kawan!"
-        ];
+        // --- 50 CHATS ---
+        const chatPool = ["Gas poll!", "Poin gue disalip!", "Info reset jam berapa?", "Semangat guys!", "Otw Rank 1", "Makan dulu baru klik", "Hp gue panas woi", "Bismillah juara", "Kapan cair hadiahnya?", "Lagi dimana nih?", "Admin bagi koin!", "Siska cantik amat", "Gue ranking berapa?", "Klik klik klik!", "Seru banget gamenya", "Salam dari Binjai", "Poin meluncur", "Jangan lupa save!", "Tangan tremor", "Mantul abis!"];
 
         function startChat() {
             setInterval(() => {
                 const b = document.createElement('div'); b.className = 'chat-bubble';
-                const name = botNames[Math.floor(Math.random()*botNames.length)];
+                const bot = botNames[Math.floor(Math.random()*botNames.length)];
                 const msg = chatPool[Math.floor(Math.random()*chatPool.length)];
-                b.innerHTML = `<span style="color:var(--primary); font-weight:800">${name}:</span> ${msg}`;
+                b.innerHTML = `<span style="color:var(--primary); font-weight:800">${bot}:</span> ${msg}`;
                 document.getElementById('chat-container').appendChild(b);
                 if(document.getElementById('chat-container').children.length > 4) document.getElementById('chat-container').removeChild(document.getElementById('chat-container').firstChild);
-            }, 3000);
+            }, 3500);
         }
 
+        // --- LOGIC ---
         function goTab(id, el) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
             document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
             document.getElementById(id).classList.add('active-tab'); el.classList.add('active');
             if(id === 'tab-winner') {
                 fetchLeaderboard();
-                confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors: ['#ff0055', '#ffd700', '#7000ff'] });
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#ff0055', '#ffd700'] });
             }
         }
 
@@ -234,9 +230,7 @@
                 activeUser = user;
                 document.getElementById('tab-login').classList.remove('active-tab');
                 document.getElementById('tab-game').classList.add('active-tab');
-                document.getElementById('nav-bar').classList.remove('hidden');
-                document.getElementById('header-top').classList.remove('hidden');
-                document.getElementById('chat-container').classList.remove('hidden');
+                document.querySelectorAll('.hidden').forEach(e => e.classList.remove('hidden'));
                 loadData(); startChat();
             }
         });
@@ -256,13 +250,12 @@
 
         async function syncData() {
             await db.collection("users").doc(activeUser.uid).set({ name: document.getElementById('my-name').innerText, score: userScore, photo: userImg }, { merge: true });
-            alert("DATA DISINKRONKAN!");
+            alert("DATA SAVED!");
         }
 
         async function fetchLeaderboard() {
-            const snap = await db.collection("users").orderBy("score", "desc").limit(50).get();
-            let players = []; snap.forEach(d => players.push({...d.data(), isBot: false}));
-            
+            const snap = await db.collection("users").orderBy("score", "desc").limit(10).get();
+            let players = []; snap.forEach(d => players.push({...d.data()}));
             let all = [...players, ...botDatabase].sort((a,b) => b.score - a.score);
             const def = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
             
@@ -271,16 +264,16 @@
             if(all[2]) { document.getElementById('top3-img').src = all[2].photo || def; document.getElementById('top3-name').innerText = all[2].name; document.getElementById('top3-coin').innerText = all[2].score + " 🪙"; }
 
             let h = "";
-            for(let i=0; i<all.length; i++) {
+            all.forEach((p, i) => {
                 h += `<div class="list-card">
                     <div class="user-info">
-                        <span style="font-size:10px; font-weight:800; color:#333; width:25px;">#${i+1}</span>
-                        <img src="${all[i].photo || def}">
-                        <span class="user-name">${all[i].name}</span>
+                        <span style="font-size:10px; font-weight:800; color:#333; width:20px;">#${i+1}</span>
+                        <img src="${p.photo || def}">
+                        <span class="user-name">${p.name}</span>
                     </div>
-                    <span class="user-score">${all[i].score} 🪙</span>
+                    <span class="user-score">${p.score} 🪙</span>
                 </div>`;
-            }
+            });
             document.getElementById('list-container').innerHTML = h;
         }
 
@@ -306,4 +299,4 @@
         }, 1000);
     </script>
 </body>
-    </html>
+                </html>
