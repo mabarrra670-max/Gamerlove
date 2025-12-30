@@ -9,15 +9,14 @@
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
     <style>
         :root { --pink: #ff85a2; --pink-dark: #f06292; --bg: #fff0f5; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; text-align: center; margin: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; text-align: center; margin: 0; }
         .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(255,133,162,0.2); width: 100%; max-width: 400px; }
         .hidden { display: none; }
         input { width: 100%; padding: 12px; margin: 10px 0; border: 2px solid var(--pink); border-radius: 10px; box-sizing: border-box; font-size: 16px; }
-        button { background: var(--pink); color: white; border: none; padding: 12px 25px; border-radius: 15px; cursor: pointer; font-weight: bold; margin: 5px; width: 100%; transition: 0.3s; font-size: 16px; }
-        button:hover { background: var(--pink-dark); }
-        #love-btn { font-size: 80px; background: none; border: none; width: auto; transition: 0.1s; cursor: pointer; display: inline-block; padding: 0; margin: 20px 0; }
+        button { background: var(--pink); color: white; border: none; padding: 12px 25px; border-radius: 15px; cursor: pointer; font-weight: bold; margin: 5px; width: 100%; font-size: 16px; }
+        #love-btn { font-size: 80px; background: none; border: none; cursor: pointer; transition: 0.1s; margin: 20px 0; }
         #love-btn:active { transform: scale(0.8); }
-        .score-box { font-size: 45px; color: var(--pink-dark); margin: 10px 0; font-weight: bold; }
+        .score-box { font-size: 45px; color: var(--pink-dark); font-weight: bold; }
         .leaderboard-list { text-align: left; margin-top: 25px; border-top: 2px solid var(--bg); padding-top: 15px; }
         .rank-item { background: #fff8fa; padding: 8px 12px; border-radius: 8px; margin-bottom: 5px; border-left: 4px solid var(--pink); }
     </style>
@@ -26,76 +25,65 @@
     <div class="card">
         <div id="auth-section">
             <h2 style="color: var(--pink-dark)">💖 Love Clicker</h2>
-            <p>Daftar atau Masuk untuk menyimpan poin sayang kamu</p>
-            <input type="email" id="email" placeholder="Email (Contoh: buncin@gmail.com)">
-            <input type="password" id="password" placeholder="Password (Minimal 6 karakter)">
+            <p>Daftar/Masuk untuk simpan skor</p>
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="password" placeholder="Password (Min. 6 Karakter)">
             <input type="text" id="username" placeholder="Nama Kamu">
             <button onclick="handleLogin()">MASUK</button>
             <button style="background:#f48fb1" onclick="handleRegister()">DAFTAR BARU</button>
         </div>
 
         <div id="game-section" class="hidden">
-            <p style="margin-top: 0;">Halo, <b id="display-name">...</b>! 👋</p>
+            <p>Halo, <b id="display-name">...</b>! 👋</p>
             <button id="love-btn">💝</button>
             <div class="score-box" id="score">0</div>
-            <p style="color: #888;">Poin Kesayangan</p>
-            
-            <button onclick="askQuestion()">❓ Pertanyaan Sayang (+50)</button>
+            <p>Poin Sayang</p>
+            <button onclick="askQuestion()">❓ Tanya Sayang (+50)</button>
             <button style="background:#4caf50" onclick="saveScore()">💾 SIMPAN SKOR ONLINE</button>
-            
             <div class="leaderboard-list">
-                <h3 style="text-align: center; color: var(--pink-dark);">🏆 Paling Bucin</h3>
+                <h3 style="text-align: center; color: var(--pink-dark);">🏆 Leaderboard</h3>
                 <div id="leaderboard-data">Memuat peringkat...</div>
             </div>
-            
-            <button style="background:#bbb; color: #333; font-size: 12px; margin-top: 20px; width: auto; padding: 5px 15px;" onclick="auth.signOut(); location.reload();">Logout</button>
+            <button style="background:#bbb; color: #333; font-size: 12px; margin-top: 20px; width: auto;" onclick="auth.signOut(); location.reload();">Logout</button>
         </div>
     </div>
 
     <script>
-        // DATA KONFIGURASI DARI SCREENSHOT ANDA
+        // MENGGUNAKAN DATA DARI SCREENSHOT TERBARU KAMU
         const firebaseConfig = {
-            apiKey: "AIzaSyCyMnLJJo2QTZZ7cBGigtj0E8Lz8mJgYyo",
-            authDomain: "loveclicker-86b7e.firebaseapp.com",
-            projectId: "loveclicker-86b7e",
-            storageBucket: "loveclicker-86b7e.firebasestorage.app",
-            messagingSenderId: "219092692738",
-            appId: "1:219092692738:web:e5eb08a2c0c756289b4f7e",
-            measurementId: "G-KM1GZ74EBN"
+          apiKey: "AIzaSyCyMnLJJo2QTZZ7cBGigtj0BNNfqjHngvU",
+          authDomain: "loveclicker-86b7e.firebaseapp.com",
+          projectId: "loveclicker-86b7e",
+          storageBucket: "loveclicker-86b7e.firebasestorage.app",
+          messagingSenderId: "219092692738",
+          appId: "1:219092692738:web:e5eb08a2c0dd7b2cf59c1b",
+          measurementId: "G-KM1GZ74EBN"
         };
 
-        // Inisialisasi Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
-        
         let currentScore = 0;
         let currentUser = null;
 
-        // Fungsi Daftar
         function handleRegister() {
             const email = document.getElementById('email').value;
             const pass = document.getElementById('password').value;
             const name = document.getElementById('username').value;
-            if(!email || !pass || !name) return alert("Isi semua kotak ya!");
-            
+            if(!name) return alert("Isi nama kamu!");
             auth.createUserWithEmailAndPassword(email, pass).then((userCredential) => {
                 userCredential.user.updateProfile({ displayName: name });
                 db.collection("users").doc(userCredential.user.uid).set({ name: name, score: 0 });
-                alert("Berhasil Daftar! Sekarang klik tombol MASUK.");
+                alert("Berhasil Daftar! Sekarang klik MASUK.");
             }).catch(err => alert("Gagal Daftar: " + err.message));
         }
 
-        // Fungsi Login
         function handleLogin() {
             const email = document.getElementById('email').value;
             const pass = document.getElementById('password').value;
-            if(!email || !pass) return alert("Masukkan Email & Password!");
-            
             auth.signInWithEmailAndPassword(email, pass).catch(err => alert("Gagal Masuk: " + err.message));
         }
 
-        // Cek Status Login
         auth.onAuthStateChanged(user => {
             if (user) {
                 currentUser = user;
@@ -107,23 +95,19 @@
             }
         });
 
-        // Klik Love
         document.getElementById('love-btn').onclick = () => {
             currentScore++;
             document.getElementById('score').innerText = currentScore;
         };
 
-        // Pertanyaan
         function askQuestion() {
-            let q = prompt("Apa kamu sayang banget sama dia? (Jawab: sayang)");
+            let q = prompt("Apa kamu sayang dia? (Jawab: sayang)");
             if(q && q.toLowerCase().includes("sayang")) {
                 currentScore += 50;
                 document.getElementById('score').innerText = currentScore;
-                alert("Jawaban manis! Poin bertambah.");
             }
         }
 
-        // Ambil Skor dari Database
         async function loadUserScore() {
             const doc = await db.collection("users").doc(currentUser.uid).get();
             if (doc.exists) {
@@ -132,29 +116,22 @@
             }
         }
 
-        // Simpan Skor ke Leaderboard
         async function saveScore() {
-            if(!currentUser) return;
             await db.collection("users").doc(currentUser.uid).set({ 
                 name: currentUser.displayName, 
                 score: currentScore 
             }, { merge: true });
-            alert("Skor Tersimpan Online!");
+            alert("Skor Tersimpan!");
             loadLeaderboard();
         }
 
-        // Tampilkan Top 5 Leaderboard
         async function loadLeaderboard() {
-            try {
-                const snapshot = await db.collection("users").orderBy("score", "desc").limit(5).get();
-                let html = "";
-                snapshot.forEach(doc => {
-                    html += `<div class="rank-item">❤️ <b>${doc.data().name}</b>: ${doc.data().score} pts</div>`;
-                });
-                document.getElementById('leaderboard-data').innerHTML = html;
-            } catch (e) {
-                document.getElementById('leaderboard-data').innerHTML = "Belum ada skor.";
-            }
+            const snapshot = await db.collection("users").orderBy("score", "desc").limit(5).get();
+            let html = "";
+            snapshot.forEach(doc => {
+                html += `<div class="rank-item">❤️ <b>${doc.data().name}</b>: ${doc.data().score} pts</div>`;
+            });
+            document.getElementById('leaderboard-data').innerHTML = html;
         }
     </script>
 </body>
