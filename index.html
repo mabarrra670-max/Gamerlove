@@ -3,53 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Love Clicker - Eternal Love</title>
+    <title>Love Clicker - Aesthetic Edition</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
     <style>
-        :root { --pink: #ff85a2; --pink-dark: #f06292; --bg: #fff0f5; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; text-align: center; margin: 0; }
-        .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(255,133,162,0.2); width: 100%; max-width: 400px; }
+        :root {
+            --primary: #ff4d6d;
+            --secondary: #ff85a2;
+            --accent: #7209b7;
+            --bg: #fff0f3;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #4a4a4a;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 380px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        h2, h3 { color: var(--primary); margin-bottom: 10px; }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            margin: 8px 0;
+            border: 1.5px solid #eee;
+            border-radius: 15px;
+            box-sizing: border-box;
+            outline: none;
+            transition: 0.3s;
+            background: #f9f9f9;
+        }
+
+        input:focus { border-color: var(--secondary); background: #fff; }
+
+        button {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 8px 0;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(255, 77, 109, 0.3);
+            transition: 0.3s;
+        }
+
+        button:active { transform: scale(0.98); }
+
+        #love-btn {
+            font-size: 90px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto;
+            filter: drop-shadow(0 10px 10px rgba(255,77,109,0.2));
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .score-box {
+            font-size: 50px;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            margin: 5px 0;
+        }
+
+        .leaderboard-list {
+            margin-top: 25px;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 15px;
+            border-radius: 20px;
+        }
+
+        .rank-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .rank-item:last-child { border-bottom: none; }
+
         .hidden { display: none; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 2px solid var(--pink); border-radius: 10px; box-sizing: border-box; font-size: 16px; }
-        button { background: var(--pink); color: white; border: none; padding: 12px 25px; border-radius: 15px; cursor: pointer; font-weight: bold; margin: 5px; width: 100%; font-size: 16px; }
-        #love-btn { font-size: 80px; background: none; border: none; cursor: pointer; transition: 0.1s; margin: 20px 0; }
-        #love-btn:active { transform: scale(0.8); }
-        .score-box { font-size: 45px; color: var(--pink-dark); font-weight: bold; }
-        .leaderboard-list { text-align: left; margin-top: 25px; border-top: 2px solid var(--bg); padding-top: 15px; }
-        .rank-item { background: #fff8fa; padding: 8px 12px; border-radius: 8px; margin-bottom: 5px; border-left: 4px solid var(--pink); }
     </style>
 </head>
 <body>
     <div class="card">
         <div id="auth-section">
-            <h2 style="color: var(--pink-dark)">💖 Love Clicker</h2>
-            <p>Daftar/Masuk untuk simpan skor</p>
+            <h2>💕 Eternal Love</h2>
+            <p style="font-size: 13px; color: #888;">Connect your hearts in one click</p>
             <input type="email" id="email" placeholder="Email">
-            <input type="password" id="password" placeholder="Password (Min. 6 Karakter)">
+            <input type="password" id="password" placeholder="Password">
             <input type="text" id="username" placeholder="Nama Kamu">
             <button onclick="handleLogin()">MASUK</button>
-            <button style="background:#f48fb1" onclick="handleRegister()">DAFTAR BARU</button>
+            <button style="background: #a29bfe; box-shadow: 0 4px 15px rgba(162, 155, 254, 0.3);" onclick="handleRegister()">DAFTAR BARU</button>
         </div>
 
         <div id="game-section" class="hidden">
-            <p>Halo, <b id="display-name">...</b>! 👋</p>
-            <button id="love-btn">💝</button>
+            <p style="font-size: 14px;">Welcome back, <b id="display-name" style="color:var(--primary)">...</b> ✨</p>
+            <button id="love-btn">❤️</button>
             <div class="score-box" id="score">0</div>
-            <p>Poin Sayang</p>
-            <button onclick="askQuestion()">❓ Tanya Sayang (+50)</button>
-            <button style="background:#4caf50" onclick="saveScore()">💾 SIMPAN SKOR ONLINE</button>
+            <p style="font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: #aaa;">Poin Kesayangan</p>
+            
+            <button onclick="askQuestion()">✨ Bonus Poin (+50)</button>
+            <button style="background: #4851f4; box-shadow: 0 4px 15px rgba(72, 81, 244, 0.3);" onclick="saveScore()">💾 SIMPAN SKOR</button>
+            
             <div class="leaderboard-list">
-                <h3 style="text-align: center; color: var(--pink-dark);">🏆 Leaderboard</h3>
-                <div id="leaderboard-data">Memuat peringkat...</div>
+                <h3 style="text-align: center; font-size: 16px;">🏆 Top Lovers</h3>
+                <div id="leaderboard-data">Loading...</div>
             </div>
-            <button style="background:#bbb; color: #333; font-size: 12px; margin-top: 20px; width: auto;" onclick="auth.signOut(); location.reload();">Logout</button>
+            <button style="background:none; color: #aaa; box-shadow:none; font-size: 11px;" onclick="auth.signOut(); location.reload();">Logout</button>
         </div>
     </div>
 
     <script>
-        // MENGGUNAKAN DATA DARI SCREENSHOT TERBARU KAMU
         const firebaseConfig = {
           apiKey: "AIzaSyCyMnLJJo2QTZZ7cBGigtj0BNNfqjHngvU",
           authDomain: "loveclicker-86b7e.firebaseapp.com",
@@ -74,14 +172,14 @@
             auth.createUserWithEmailAndPassword(email, pass).then((userCredential) => {
                 userCredential.user.updateProfile({ displayName: name });
                 db.collection("users").doc(userCredential.user.uid).set({ name: name, score: 0 });
-                alert("Berhasil Daftar! Sekarang klik MASUK.");
-            }).catch(err => alert("Gagal Daftar: " + err.message));
+                alert("Berhasil Daftar! Klik MASUK.");
+            }).catch(err => alert(err.message));
         }
 
         function handleLogin() {
             const email = document.getElementById('email').value;
             const pass = document.getElementById('password').value;
-            auth.signInWithEmailAndPassword(email, pass).catch(err => alert("Gagal Masuk: " + err.message));
+            auth.signInWithEmailAndPassword(email, pass).catch(err => alert(err.message));
         }
 
         auth.onAuthStateChanged(user => {
@@ -129,7 +227,7 @@
             const snapshot = await db.collection("users").orderBy("score", "desc").limit(5).get();
             let html = "";
             snapshot.forEach(doc => {
-                html += `<div class="rank-item">❤️ <b>${doc.data().name}</b>: ${doc.data().score} pts</div>`;
+                html += `<div class="rank-item"><span>💖 ${doc.data().name}</span><b>${doc.data().score}</b></div>`;
             });
             document.getElementById('leaderboard-data').innerHTML = html;
         }
