@@ -3,111 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Love Clicker - Pro Edition</title>
+    <title>Love Clicker - Leaderboard Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
     <style>
         :root {
-            --glass: rgba(255, 255, 255, 0.2);
-            --glass-border: rgba(255, 255, 255, 0.3);
+            --bg-dark: #1a1c23;
+            --card-dark: #242731;
             --main-pink: #ff758c;
             --main-purple: #ff7eb3;
-            --text: #ffffff;
+            --gold: #ffcf40;
+            --white: #ffffff;
         }
 
         * { box-sizing: border-box; font-family: 'Quicksand', sans-serif; }
 
         body {
-            margin: 0; min-height: 100vh; display: flex; justify-content: center; align-items: center;
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 400% 400%; animation: gradientBG 15s ease infinite; overflow-x: hidden;
+            margin: 0; min-height: 100vh; background-color: var(--bg-dark);
+            color: var(--white); display: flex; justify-content: center; align-items: flex-start;
+            padding-top: 20px; overflow-x: hidden;
         }
 
-        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .container { width: 95%; max-width: 450px; }
 
-        .card {
-            background: var(--glass); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border); border-radius: 30px; padding: 25px;
-            width: 90%; max-width: 400px; box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-            text-align: center; color: var(--text); z-index: 10;
+        /* HEADER NAV */
+        .nav-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px; background: var(--card-dark); border-radius: 20px;
+            margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1);
         }
 
-        .profile-img {
-            width: 100px; height: 100px; border-radius: 50%; border: 4px solid white;
-            object-fit: cover; margin-bottom: 10px; background: #eee;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        /* WINNER SECTION (Menu Pemenang) */
+        .winner-card {
+            background: linear-gradient(135deg, #ff758c 0%, #7209b7 100%);
+            border-radius: 25px; padding: 20px; text-align: center;
+            margin-bottom: 25px; position: relative; overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
-        .leader-img { width: 35px; height: 35px; border-radius: 50%; margin-right: 10px; object-fit: cover; vertical-align: middle; border: 1px solid white; }
+        .winner-badge {
+            position: absolute; top: 10px; right: 10px;
+            background: var(--gold); color: black; padding: 5px 15px;
+            border-radius: 20px; font-weight: 800; font-size: 12px;
+        }
+
+        .winner-img {
+            width: 100px; height: 100px; border-radius: 50%;
+            border: 4px solid var(--gold); object-fit: cover;
+            margin-bottom: 10px; background: #333;
+        }
+
+        /* MAIN GAME SECTION */
+        .main-card {
+            background: var(--card-dark); border-radius: 25px;
+            padding: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .profile-main-img {
+            width: 80px; height: 80px; border-radius: 50%;
+            border: 3px solid var(--main-pink); object-fit: cover;
+        }
+
+        .score-display { font-size: 45px; font-weight: 800; margin: 10px 0; color: var(--main-pink); }
+
+        /* LEADERBOARD LIST */
+        .leaderboard-container {
+            margin-top: 25px; text-align: left;
+        }
+
+        .rank-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px; background: rgba(255,255,255,0.03);
+            border-radius: 15px; margin-bottom: 10px; transition: 0.3s;
+        }
+
+        .rank-info { display: flex; align-items: center; }
+        .rank-number { font-weight: 800; margin-right: 15px; color: var(--main-pink); width: 20px; }
+        .rank-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 12px; }
+
+        /* BUTTONS */
+        button {
+            width: 100%; padding: 14px; border-radius: 15px; border: none;
+            font-weight: 700; cursor: pointer; transition: 0.2s; margin-top: 10px;
+        }
+        .btn-primary { background: var(--main-pink); color: white; }
+        .btn-save { background: white; color: black; }
+        .btn-outline { background: transparent; border: 1px solid white; color: white; }
 
         input[type="file"] { display: none; }
-        .custom-file-upload {
-            display: inline-block; padding: 8px 15px; cursor: pointer;
-            background: rgba(255,255,255,0.3); border-radius: 10px; font-size: 12px; margin-bottom: 10px;
-        }
-
-        button {
-            width: 100%; padding: 12px; margin-top: 8px; border: none; border-radius: 12px;
-            background: linear-gradient(45deg, var(--main-pink), var(--main-purple));
-            color: white; font-weight: 700; cursor: pointer; transition: 0.3s;
-        }
-
-        #love-btn { font-size: 70px; background: none; border: none; cursor: pointer; animation: pulse 2s infinite; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-
-        .score-box { font-size: 50px; font-weight: 700; margin: 0; }
-
-        .shop-box {
-            background: rgba(0,0,0,0.2); padding: 15px; border-radius: 20px; margin-top: 15px; text-align: left;
-            font-size: 13px;
-        }
-
-        .rank-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .hidden { display: none; }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <div id="auth-section">
-            <h2>✨ Love Clicker</h2>
-            <input type="email" id="email" placeholder="Email">
-            <input type="password" id="password" placeholder="Password">
-            <input type="text" id="username" placeholder="Nama Panggilan">
-            <button onclick="handleLogin()">LOGIN</button>
-            <button style="background: rgba(255,255,255,0.2);" onclick="handleRegister()">DAFTAR</button>
+    <div class="container">
+        <div id="auth-section" class="main-card">
+            <h2>💖 Love Clicker</h2>
+            <input type="email" id="email" placeholder="Email" style="width:100%; padding:12px; margin:5px 0; border-radius:10px; border:none;">
+            <input type="password" id="password" placeholder="Password" style="width:100%; padding:12px; margin:5px 0; border-radius:10px; border:none;">
+            <input type="text" id="username" placeholder="Nama Kamu" style="width:100%; padding:12px; margin:5px 0; border-radius:10px; border:none;">
+            <button class="btn-primary" onclick="handleLogin()">MASUK</button>
+            <button class="btn-outline" onclick="handleRegister()">DAFTAR BARU</button>
         </div>
 
         <div id="game-section" class="hidden">
-            <div id="profile-area">
-                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" id="my-photo" class="profile-img">
-                <h3 id="display-name" style="margin:0">User</h3>
+            <div class="nav-header">
+                <span>🏠 Home</span>
+                <span onclick="auth.signOut(); location.reload();" style="cursor:pointer; opacity:0.6;">Logout 🚪</span>
+            </div>
+
+            <div class="winner-card" id="winner-box">
+                <div class="winner-badge">RANK 1 - PEMENANG</div>
+                <img src="" id="winner-photo" class="winner-img">
+                <h2 id="winner-name" style="margin:5px 0 0 0;">...</h2>
+                <p id="winner-score" style="margin:0; opacity:0.8;">Skor: 0</p>
+            </div>
+
+            <div class="main-card">
+                <img src="" id="my-photo" class="profile-main-img">
+                <h3 id="display-name" style="margin:10px 0 0 0;">User</h3>
                 
-                <label class="custom-file-upload">
+                <label style="cursor:pointer; font-size:12px; color:var(--main-pink);">
                     <input type="file" id="file-input" accept="image/*">
-                    📸 Pilih Foto dari Galeri
+                    📸 Ganti Foto
                 </label>
-            </div>
-            
-            <button id="love-btn">💖</button>
-            <div class="score-box" id="score">0</div>
-            
-            <button onclick="saveScore()" style="background: white; color: var(--main-pink);">💾 SIMPAN DATA (WAJIB)</button>
 
-            <div class="shop-box">
-                <b>🛒 Shop (Biaya: 500 Poin)</b>
-                <input type="text" id="new-name" placeholder="Username Baru" style="font-size: 11px; padding: 8px; width:100%; background:rgba(255,255,255,0.1); border:1px solid white; border-radius:10px; color:white; margin-top:5px;">
-                <button onclick="buyUsername()" style="padding: 5px; font-size: 11px; background: #4ecdc4;">Ganti Username</button>
+                <div class="score-display" id="score">0</div>
+                <button id="love-btn" style="font-size:30px; background:none; box-shadow:none;">💖</button>
+                
+                <button class="btn-save" onclick="saveScore()">SIMPAN DATA & FOTO</button>
+                <button class="btn-outline" onclick="askQuestion()" style="font-size:12px;">BONUS POIN (+50)</button>
             </div>
 
-            <div id="leaderboard" style="margin-top:20px;">
-                <h4 style="margin-bottom:10px;">🏆 Top Lovers</h4>
+            <div class="leaderboard-container">
+                <h3 style="margin-left:10px;">🏆 Peringkat Teratas</h3>
                 <div id="leaderboard-data"></div>
             </div>
-
-            <button style="background:none; opacity: 0.5; font-size: 10px;" onclick="auth.signOut(); location.reload();">Logout</button>
         </div>
     </div>
 
@@ -129,19 +162,15 @@
         let currentUser = null;
         let base64Image = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
 
-        // Fungsi Convert Foto ke Teks (Base64)
+        // Upload Foto
         document.getElementById('file-input').addEventListener('change', function(e) {
             const file = e.target.files[0];
             const reader = new FileReader();
             reader.onloadend = function() {
                 base64Image = reader.result;
                 document.getElementById('my-photo').src = base64Image;
-                alert("Foto terpilih! Klik SIMPAN DATA untuk memproses.");
             }
-            if (file) {
-                // Kompres sedikit ukurannya agar database tidak berat
-                reader.readAsDataURL(file);
-            }
+            if (file) reader.readAsDataURL(file);
         });
 
         function handleRegister() {
@@ -151,7 +180,7 @@
             auth.createUserWithEmailAndPassword(email, pass).then((userCredential) => {
                 userCredential.user.updateProfile({ displayName: name });
                 db.collection("users").doc(userCredential.user.uid).set({ name: name, score: 0, photo: base64Image });
-                alert("Sukses! Klik LOGIN.");
+                alert("Berhasil! Silakan Login.");
             }).catch(err => alert(err.message));
         }
 
@@ -188,45 +217,50 @@
             }
         }
 
-        async function buyUsername() {
-            const newName = document.getElementById('new-name').value;
-            if(currentScore < 500) return alert("Butuh 500 poin!");
-            if(!newName) return alert("Masukkan nama baru!");
-            
-            if(confirm("Ganti nama seharga 500 poin?")) {
-                currentScore -= 500;
-                await db.collection("users").doc(currentUser.uid).update({ name: newName, score: currentScore });
-                document.getElementById('display-name').innerText = newName;
-                document.getElementById('score').innerText = currentScore;
-                alert("Berhasil!");
-                loadLeaderboard();
-            }
+        async function saveScore() {
+            await db.collection("users").doc(currentUser.uid).set({ 
+                name: document.getElementById('display-name').innerText, 
+                score: currentScore,
+                photo: base64Image
+            }, { merge: true });
+            alert("Tersimpan!");
+            loadLeaderboard();
         }
 
-        async function saveScore() {
-            try {
-                await db.collection("users").doc(currentUser.uid).set({ 
-                    name: document.getElementById('display-name').innerText, 
-                    score: currentScore,
-                    photo: base64Image
-                }, { merge: true });
-                alert("Data & Foto Berhasil Disimpan!");
-                loadLeaderboard();
-            } catch (e) {
-                alert("Foto terlalu besar! Coba gunakan foto yang lebih kecil ukurannya.");
+        function askQuestion() {
+            let q = prompt("Ketik 'sayang' untuk bonus:");
+            if(q && q.toLowerCase() === "sayang") {
+                currentScore += 50;
+                document.getElementById('score').innerText = currentScore;
             }
         }
 
         async function loadLeaderboard() {
             const snapshot = await db.collection("users").orderBy("score", "desc").limit(10).get();
             let html = "";
+            let index = 1;
+            
             snapshot.forEach(doc => {
                 const d = doc.data();
                 const pic = d.photo || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
-                html += `<div class="rank-item">
-                            <div><img src="${pic}" class="leader-img"><b>${d.name}</b></div>
-                            <b>${d.score}</b>
-                         </div>`;
+                
+                // Set Pemenang (Rank 1)
+                if(index === 1) {
+                    document.getElementById('winner-photo').src = pic;
+                    document.getElementById('winner-name').innerText = d.name;
+                    document.getElementById('winner-score').innerText = "Skor: " + d.score;
+                }
+
+                html += `
+                <div class="rank-item">
+                    <div class="rank-info">
+                        <span class="rank-number">${index}</span>
+                        <img src="${pic}" class="rank-img">
+                        <b>${d.name}</b>
+                    </div>
+                    <b>${d.score}</b>
+                </div>`;
+                index++;
             });
             document.getElementById('leaderboard-data').innerHTML = html;
         }
