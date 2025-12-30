@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Love Clicker - Hyper Engine V2</title>
+    <title>Love Clicker - Community Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
@@ -15,172 +15,92 @@
             --bg: #050505;
             --card: rgba(255, 255, 255, 0.05);
             --gold: #ffd700;
-            --silver: #c0c0c0;
-            --bronze: #cd7f32;
         }
 
         * { box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
-
-        body {
-            margin: 0; background-color: var(--bg); color: white;
-            display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden;
-        }
-
-        /* Particles Engine */
-        #particles { position: fixed; width: 100%; height: 100%; z-index: -1; }
+        body { margin: 0; background-color: var(--bg); color: white; display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden; }
 
         .app-container { width: 100%; max-width: 480px; padding-bottom: 90px; }
 
-        /* Timer Header */
-        .timer-header {
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            padding: 10px; text-align: center; font-size: 13px; font-weight: 700;
-            border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
-            box-shadow: 0 5px 20px rgba(255, 0, 85, 0.3);
+        /* LIVE CHAT ENGINE STYLING */
+        #chat-container {
+            position: fixed; bottom: 100px; left: 15px; right: 15px;
+            height: 180px; overflow-y: hidden; z-index: 50;
+            pointer-events: none; mask-image: linear-gradient(to top, black 70%, transparent 100%);
         }
 
-        /* Tab System */
+        .chat-bubble {
+            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(5px);
+            padding: 8px 12px; border-radius: 12px; margin-bottom: 6px;
+            font-size: 12px; animation: chatIn 0.3s ease forwards;
+            border-left: 3px solid var(--primary); width: fit-content; max-width: 80%;
+        }
+
+        @keyframes chatIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+
+        .chat-user { color: var(--primary); font-weight: 800; margin-right: 5px; }
+        .chat-msg { color: #ddd; }
+
+        /* HEADER & TABS */
+        .timer-header { background: linear-gradient(90deg, var(--primary), var(--secondary)); padding: 10px; text-align: center; font-size: 13px; font-weight: 700; border-radius: 0 0 20px 20px; box-shadow: 0 5px 20px rgba(255, 0, 85, 0.3); }
         .tab-content { display: none; padding: 20px; animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
         .active-tab { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Prize Card */
-        .prize-card {
-            background: var(--card); border: 1px solid rgba(255,255,255,0.1);
-            padding: 15px; border-radius: 20px; margin-bottom: 20px; backdrop-filter: blur(10px);
-        }
-
-        /* Podium Engine */
-        .podium { display: flex; justify-content: center; align-items: flex-end; margin: 40px 0 20px; gap: 8px; }
-        .p-item { text-align: center; position: relative; transition: 0.3s; }
-        .p-1 { order: 2; z-index: 2; } .p-2 { order: 1; } .p-3 { order: 3; }
-        
-        .p-img {
-            width: 70px; height: 70px; border-radius: 50%; border: 3px solid #555;
-            object-fit: cover; background: #222;
-        }
-        .p-1 .p-img { width: 100px; height: 100px; border-color: var(--gold); box-shadow: 0 0 25px rgba(255,215,0,0.4); }
-        .crown { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 30px; }
-
-        /* Score Engine */
-        .main-score { font-size: 70px; font-weight: 800; background: linear-gradient(to bottom, #fff, #888); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 10px 0; }
-
-        /* Love Button Shockwave */
-        #love-btn {
-            font-size: 110px; border: none; background: none; cursor: pointer;
-            transition: transform 0.1s ease; filter: drop-shadow(0 0 20px rgba(255,0,85,0.4));
-        }
+        /* GAME ENGINE */
+        .main-score { font-size: 70px; font-weight: 800; text-align: center; margin: 10px 0; background: linear-gradient(#fff, #888); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        #love-btn { font-size: 110px; border: none; background: none; cursor: pointer; transition: 0.1s; filter: drop-shadow(0 0 20px rgba(255,0,85,0.4)); }
         #love-btn:active { transform: scale(0.8); }
 
-        /* Navigation */
-        .bottom-nav {
-            position: fixed; bottom: 0; width: 100%; max-width: 480px;
-            background: rgba(20, 20, 25, 0.95); backdrop-filter: blur(20px);
-            display: flex; justify-content: space-around; padding: 15px 0;
-            border-top: 1px solid rgba(255,255,255,0.05); border-radius: 25px 25px 0 0;
-        }
-        .nav-item { color: #555; text-align: center; flex: 1; cursor: pointer; transition: 0.3s; }
+        /* NAV */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: rgba(20, 20, 25, 0.95); backdrop-filter: blur(20px); display: flex; justify-content: space-around; padding: 15px 0; border-radius: 25px 25px 0 0; z-index: 100; }
+        .nav-item { color: #555; text-align: center; flex: 1; cursor: pointer; }
         .nav-item.active { color: var(--primary); }
-        .nav-item span { display: block; font-size: 11px; font-weight: 600; margin-top: 4px; }
-
-        .reward-tag { font-size: 10px; background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 10px; display: inline-block; margin-top: 5px; }
+        .nav-item span { display: block; font-size: 11px; margin-top: 4px; }
 
         .hidden { display: none; }
+        input { width: 100%; background: rgba(255,255,255,0.05); border: none; padding: 15px; border-radius: 15px; color: white; margin-bottom: 10px; }
+        .btn-main { width: 100%; padding: 15px; border-radius: 15px; border: none; background: var(--primary); color: white; font-weight: 800; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <canvas id="particles"></canvas>
-
     <div class="app-container">
+        <div id="chat-container" class="hidden"></div>
+
         <div class="timer-header hidden" id="top-timer">
-            🕒 RESET HADIAH DALAM: <span id="countdown">23:59:59</span>
+            🕒 RESET HADIAH: <span id="countdown">00:00:00</span>
         </div>
 
         <div id="tab-auth" class="tab-content active-tab">
-            <div style="text-align:center; padding-top:100px;">
-                <h1 style="font-size:40px; margin:0;">LOVE <span style="color:var(--primary)">CLICKER</span></h1>
-                <p style="color:#666;">High Performance Love Engine</p>
-                <div class="prize-card" style="margin-top:40px;">
-                    <input type="email" id="email" placeholder="Email" style="width:100%; background:rgba(255,255,255,0.05); border:none; padding:15px; border-radius:15px; color:white; margin-bottom:10px;">
-                    <input type="password" id="password" placeholder="Password" style="width:100%; background:rgba(255,255,255,0.05); border:none; padding:15px; border-radius:15px; color:white; margin-bottom:10px;">
-                    <input type="text" id="username" placeholder="Nama Panggilan" style="width:100%; background:rgba(255,255,255,0.05); border:none; padding:15px; border-radius:15px; color:white;">
-                    <button onclick="handleLogin()" style="width:100%; padding:15px; border-radius:15px; border:none; background:var(--primary); color:white; font-weight:800; margin-top:15px;">LOGIN</button>
-                    <button onclick="handleRegister()" style="width:100%; background:none; border:none; color:#777; margin-top:15px; font-size:12px;">DAFTAR AKUN BARU</button>
+            <div style="text-align:center; padding-top:80px;">
+                <h1>LOVE <span style="color:var(--primary)">CLICKER</span></h1>
+                <div style="background:var(--card); padding:20px; border-radius:20px; margin-top:30px;">
+                    <input type="email" id="email" placeholder="Email">
+                    <input type="password" id="password" placeholder="Password">
+                    <input type="text" id="username" placeholder="Nama Panggilan">
+                    <button class="btn-main" onclick="handleLogin()">LOGIN</button>
+                    <button onclick="handleRegister()" style="background:none; border:none; color:#777; margin-top:15px; font-size:12px;">DAFTAR AKUN BARU</button>
                 </div>
             </div>
         </div>
 
         <div id="tab-game" class="tab-content">
-            <div style="text-align:center; padding-top:40px;">
+            <div style="text-align:center; padding-top:20px;">
                 <div class="main-score" id="score">0</div>
-                <p style="letter-spacing:5px; color:var(--primary); font-weight:800; font-size:12px;">LOVE ENERGY</p>
-                
-                <div style="margin:60px 0;">
-                    <button id="love-btn">💖</button>
-                </div>
-
-                <button onclick="saveScore()" style="width:100%; padding:18px; border-radius:20px; border:none; background:white; color:black; font-weight:800; box-shadow:0 10px 30px rgba(255,255,255,0.2);">💾 SIMPAN SKOR</button>
-                <button onclick="askQuestion()" style="margin-top:15px; background:none; border:none; color:#555; font-size:12px;">✨ CLAIM DAILY BONUS (+50)</button>
+                <div style="margin:40px 0;"><button id="love-btn">💖</button></div>
+                <button class="btn-main" onclick="saveScore()" style="background:white; color:black;">💾 SIMPAN DATA</button>
             </div>
         </div>
 
         <div id="tab-winner" class="tab-content">
-            <h2 style="text-align:center;">JUARA HARIAN</h2>
-            
-            <div class="prize-card" style="text-align:center; font-size:12px; background:rgba(255,215,0,0.05); border-color:var(--gold);">
-                🎁 <b style="color:var(--gold)">DAFTAR HADIAH:</b><br>
-                Rank 1: 1.000.000 Coin | Rank 2: 100.000 Coin<br>
-                Rank 3: 50.000 Coin | Rank 4+: 5.000 Coin
-            </div>
-
-            <div class="podium">
-                <div class="p-item p-2">
-                    <img src="" id="p2-img" class="p-img">
-                    <div id="p2-name" style="font-size:11px; margin-top:5px;">...</div>
-                    <div class="reward-tag">100K 💰</div>
-                </div>
-                <div class="p-item p-1">
-                    <div class="crown">👑</div>
-                    <img src="" id="p1-img" class="p-img">
-                    <div id="p1-name" style="font-size:14px; font-weight:800; margin-top:5px;">...</div>
-                    <div class="reward-tag" style="background:var(--gold); color:black;">1M 💰</div>
-                </div>
-                <div class="p-item p-3">
-                    <img src="" id="p3-img" class="p-img">
-                    <div id="p3-name" style="font-size:11px; margin-top:5px;">...</div>
-                    <div class="reward-tag">50K 💰</div>
-                </div>
-            </div>
-
-            <div id="rank-list" style="margin-top:30px;"></div>
-        </div>
-
-        <div id="tab-profile" class="tab-content">
-            <div style="text-align:center; padding-top:30px;">
-                <div style="position:relative; display:inline-block;">
-                    <img src="" id="my-photo" style="width:130px; height:130px; border-radius:50%; border:4px solid var(--primary); object-fit:cover;">
-                    <label style="position:absolute; bottom:0; right:0; background:var(--primary); padding:10px; border-radius:50%; cursor:pointer; font-size:15px;">
-                        📸<input type="file" id="file-input" accept="image/*" style="display:none;">
-                    </label>
-                </div>
-                <h2 id="display-name" style="margin:20px 0 5px 0;">User</h2>
-                <p style="color:#555; margin-bottom:40px;">Pro Love User</p>
-
-                <div style="background:var(--card); padding:20px; border-radius:25px; text-align:left;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-                        <span>Poin Tersimpan</span>
-                        <b style="color:var(--primary)" id="prof-score">0</b>
-                    </div>
-                    <button onclick="auth.signOut(); location.reload();" style="width:100%; padding:15px; border-radius:15px; border:1px solid #333; background:none; color:#ff4444; font-weight:700;">KELUAR AKUN</button>
-                </div>
-            </div>
+            <h2 style="text-align:center;">LEADERBOARD</h2>
+            <div id="rank-list"></div>
         </div>
 
         <div class="bottom-nav hidden" id="navbar">
             <div class="nav-item active" onclick="switchTab('tab-game', this)">🎮<span>Game</span></div>
             <div class="nav-item" onclick="switchTab('tab-winner', this)">🏆<span>Winner</span></div>
-            <div class="nav-item" onclick="switchTab('tab-profile', this)">👤<span>Profil</span></div>
+            <div class="nav-item" onclick="switchTab('tab-auth', this)" id="logout-btn">👤<span>Profil</span></div>
         </div>
     </div>
 
@@ -200,57 +120,53 @@
         const db = firebase.firestore();
         let currentScore = 0;
         let currentUser = null;
-        let base64Image = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
 
-        // Switch Tab Engine
+        // --- LIVE CHAT ENGINE ---
+        const randomUsers = ["Ripal", "Adit_Ganteng", "Siska_Gemoy", "Bocil_Bucin", "Dika99", "Putri_Cantik", "Rey_Runner", "Lina_Love", "Kaka_Kece", "Zaky_Pro"];
+        const randomMsgs = ["Semangat kliknya guys!", "Wah bentar lagi rank 1 nih!", "Gila koinnya banyak banget", "Info bonus poin dong", "Siapa yang udah dapat 1 juta?", "Pemenang harian reset jam berapa?", "Love you admin!", "Seru banget gamenya", "Ayo balapan skor!", "Foto profilnya keren-keren"];
+        
+        let chatCount = 0;
+        let chatInterval;
+
+        function startChatEngine() {
+            chatInterval = setInterval(() => {
+                if(chatCount < 20) {
+                    addChatBubble();
+                    chatCount++;
+                } else {
+                    clearInterval(chatInterval);
+                    setTimeout(() => {
+                        chatCount = 0;
+                        startChatEngine();
+                    }, 10000); // Cooldown 10 detik
+                }
+            }, 1500); // Per chat 1.5 detik
+        }
+
+        function addChatBubble() {
+            const container = document.getElementById('chat-container');
+            const user = randomUsers[Math.floor(Math.random() * randomUsers.length)];
+            const msg = randomMsgs[Math.floor(Math.random() * randomMsgs.length)];
+            
+            const div = document.createElement('div');
+            div.className = 'chat-bubble';
+            div.innerHTML = `<span class="chat-user">${user}:</span><span class="chat-msg">${msg}</span>`;
+            
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+            
+            if(container.children.length > 5) {
+                container.removeChild(container.firstChild);
+            }
+        }
+
+        // --- GAME & AUTH LOGIC ---
         function switchTab(id, el) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(id).classList.add('active-tab');
             el.classList.add('active');
             if(id === 'tab-winner') loadLeaderboard();
-        }
-
-        // Timer Engine
-        function updateTimer() {
-            const now = new Date();
-            const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-            const diff = tomorrow - now;
-            const h = Math.floor(diff / 3600000);
-            const m = Math.floor((diff % 3600000) / 60000);
-            const s = Math.floor((diff % 60000) / 1000);
-            document.getElementById('countdown').innerText = 
-                `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-        }
-        setInterval(updateTimer, 1000);
-
-        // Photo Upload Engine
-        document.getElementById('file-input').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                base64Image = reader.result;
-                document.getElementById('my-photo').src = base64Image;
-            }
-            if(file) reader.readAsDataURL(file);
-        });
-
-        // Firebase Logic
-        function handleLogin() {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            auth.signInWithEmailAndPassword(email, pass).catch(e => alert(e.message));
-        }
-
-        function handleRegister() {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            const name = document.getElementById('username').value;
-            auth.createUserWithEmailAndPassword(email, pass).then((u) => {
-                u.user.updateProfile({ displayName: name });
-                db.collection("users").doc(u.user.uid).set({ name: name, score: 0, photo: base64Image });
-                alert("Sukses! Sekarang silakan Login.");
-            }).catch(e => alert(e.message));
         }
 
         auth.onAuthStateChanged(user => {
@@ -260,7 +176,9 @@
                 document.getElementById('tab-game').classList.add('active-tab');
                 document.getElementById('navbar').classList.remove('hidden');
                 document.getElementById('top-timer').classList.remove('hidden');
+                document.getElementById('chat-container').classList.remove('hidden');
                 loadUserData();
+                startChatEngine(); // Mulai chat pas login
             }
         });
 
@@ -272,90 +190,45 @@
         async function loadUserData() {
             const doc = await db.collection("users").doc(currentUser.uid).get();
             if (doc.exists) {
-                const data = doc.data();
-                currentScore = data.score || 0;
-                base64Image = data.photo || base64Image;
+                currentScore = doc.data().score || 0;
                 document.getElementById('score').innerText = currentScore;
-                document.getElementById('prof-score').innerText = currentScore;
-                document.getElementById('display-name').innerText = data.name;
-                document.getElementById('my-photo').src = base64Image;
             }
         }
 
         async function saveScore() {
             await db.collection("users").doc(currentUser.uid).set({ 
-                name: document.getElementById('display-name').innerText, 
-                score: currentScore, photo: base64Image
+                name: currentUser.displayName, score: currentScore 
             }, { merge: true });
-            alert("SKOR TERKIRIM KE CLOUD!");
-        }
-
-        function askQuestion() {
-            let q = prompt("Ketik 'SAYANG' (Kapital):");
-            if(q === "SAYANG") {
-                currentScore += 50;
-                document.getElementById('score').innerText = currentScore;
-            }
+            alert("SKOR TERSIMPAN!");
         }
 
         async function loadLeaderboard() {
             const snap = await db.collection("users").orderBy("score", "desc").limit(10).get();
-            let players = [];
-            snap.forEach(d => players.push(d.data()));
-
-            // Podium Juara
-            if(players[0]) { document.getElementById('p1-img').src = players[0].photo; document.getElementById('p1-name').innerText = players[0].name; }
-            if(players[1]) { document.getElementById('p2-img').src = players[1].photo; document.getElementById('p2-name').innerText = players[1].name; }
-            if(players[2]) { document.getElementById('p3-img').src = players[2].photo; document.getElementById('p3-name').innerText = players[2].name; }
-
-            // List Sisa
             let html = "";
-            for(let i=3; i<players.length; i++) {
-                html += `
-                <div style="background:var(--card); padding:15px; border-radius:15px; display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                    <div style="display:flex; align-items:center;">
-                        <span style="color:#555; margin-right:15px; font-weight:800;">#${i+1}</span>
-                        <img src="${players[i].photo}" style="width:35px; height:35px; border-radius:50%; margin-right:10px; object-fit:cover;">
-                        <b>${players[i].name}</b>
-                    </div>
-                    <div style="text-align:right;">
-                        <div style="font-weight:800;">${players[i].score}</div>
-                        <div style="font-size:9px; color:#555;">Prize: 5.000 💰</div>
-                    </div>
+            let i = 1;
+            snap.forEach(d => {
+                html += `<div style="background:var(--card); padding:15px; border-radius:15px; display:flex; justify-content:space-between; margin-bottom:10px;">
+                    <span>#${i++} ${d.data().name}</span><b>${d.data().score}</b>
                 </div>`;
-            }
+            });
             document.getElementById('rank-list').innerHTML = html;
         }
 
-        // Particle Engine Logic
-        const canvas = document.getElementById('particles');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        let particles = [];
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2;
-                this.speedX = Math.random() * 0.5 - 0.25;
-                this.speedY = Math.random() * 0.5 - 0.25;
-            }
-            update() {
-                this.x += this.speedX; this.y += this.speedY;
-                if (this.x > canvas.width) this.x = 0; if (this.y > canvas.height) this.y = 0;
-            }
-            draw() {
-                ctx.fillStyle = 'rgba(255,255,255,0.2)'; ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
-            }
+        function handleLogin() {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            auth.signInWithEmailAndPassword(email, pass);
         }
-        for(let i=0; i<50; i++) particles.push(new Particle());
-        function animate() {
-            ctx.clearRect(0,0,canvas.width,canvas.height);
-            particles.forEach(p => { p.update(); p.draw(); });
-            requestAnimationFrame(animate);
+
+        function handleRegister() {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            const name = document.getElementById('username').value;
+            auth.createUserWithEmailAndPassword(email, pass).then(u => {
+                u.user.updateProfile({displayName: name});
+                db.collection("users").doc(u.user.uid).set({name: name, score: 0});
+            });
         }
-        animate();
     </script>
 </body>
-    </html>
+</html>
