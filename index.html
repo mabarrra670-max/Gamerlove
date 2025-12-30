@@ -2,168 +2,185 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Love Clicker - Pro Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Love Clicker - Hyper Engine V2</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
     <style>
         :root {
-            --bg: #0f1016;
-            --card: #1c1e29;
-            --primary: #ff4d6d;
-            --accent: #7209b7;
-            --text-main: #ffffff;
-            --text-dim: #a0a0a0;
-            --gold: #ffca28;
+            --primary: #ff0055;
+            --secondary: #7000ff;
+            --bg: #050505;
+            --card: rgba(255, 255, 255, 0.05);
+            --gold: #ffd700;
+            --silver: #c0c0c0;
+            --bronze: #cd7f32;
         }
 
-        * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        * { box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
 
         body {
-            margin: 0; background-color: var(--bg); color: var(--text-main);
-            display: flex; justify-content: center; min-height: 100vh;
+            margin: 0; background-color: var(--bg); color: white;
+            display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden;
         }
 
-        .app-container { width: 100%; max-width: 480px; padding-bottom: 80px; position: relative; }
+        /* Particles Engine */
+        #particles { position: fixed; width: 100%; height: 100%; z-index: -1; }
 
-        /* TAB SYSTEM */
-        .tab-content { display: none; padding: 20px; animation: fadeIn 0.4s ease; }
+        .app-container { width: 100%; max-width: 480px; padding-bottom: 90px; }
+
+        /* Timer Header */
+        .timer-header {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            padding: 10px; text-align: center; font-size: 13px; font-weight: 700;
+            border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
+            box-shadow: 0 5px 20px rgba(255, 0, 85, 0.3);
+        }
+
+        /* Tab System */
+        .tab-content { display: none; padding: 20px; animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
         .active-tab { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Prize Card */
+        .prize-card {
+            background: var(--card); border: 1px solid rgba(255,255,255,0.1);
+            padding: 15px; border-radius: 20px; margin-bottom: 20px; backdrop-filter: blur(10px);
+        }
 
-        /* BOTTOM NAVIGATION */
+        /* Podium Engine */
+        .podium { display: flex; justify-content: center; align-items: flex-end; margin: 40px 0 20px; gap: 8px; }
+        .p-item { text-align: center; position: relative; transition: 0.3s; }
+        .p-1 { order: 2; z-index: 2; } .p-2 { order: 1; } .p-3 { order: 3; }
+        
+        .p-img {
+            width: 70px; height: 70px; border-radius: 50%; border: 3px solid #555;
+            object-fit: cover; background: #222;
+        }
+        .p-1 .p-img { width: 100px; height: 100px; border-color: var(--gold); box-shadow: 0 0 25px rgba(255,215,0,0.4); }
+        .crown { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 30px; }
+
+        /* Score Engine */
+        .main-score { font-size: 70px; font-weight: 800; background: linear-gradient(to bottom, #fff, #888); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 10px 0; }
+
+        /* Love Button Shockwave */
+        #love-btn {
+            font-size: 110px; border: none; background: none; cursor: pointer;
+            transition: transform 0.1s ease; filter: drop-shadow(0 0 20px rgba(255,0,85,0.4));
+        }
+        #love-btn:active { transform: scale(0.8); }
+
+        /* Navigation */
         .bottom-nav {
-            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-            width: 100%; max-width: 480px; background: var(--card);
+            position: fixed; bottom: 0; width: 100%; max-width: 480px;
+            background: rgba(20, 20, 25, 0.95); backdrop-filter: blur(20px);
             display: flex; justify-content: space-around; padding: 15px 0;
-            border-top: 1px solid rgba(255,255,255,0.05); z-index: 100;
+            border-top: 1px solid rgba(255,255,255,0.05); border-radius: 25px 25px 0 0;
         }
+        .nav-item { color: #555; text-align: center; flex: 1; cursor: pointer; transition: 0.3s; }
+        .nav-item.active { color: var(--primary); }
+        .nav-item span { display: block; font-size: 11px; font-weight: 600; margin-top: 4px; }
 
-        .nav-item { cursor: pointer; display: flex; flex-direction: column; align-items: center; font-size: 11px; color: var(--text-dim); }
-        .nav-item.active { color: var(--primary); font-weight: bold; }
-        .nav-icon { font-size: 20px; margin-bottom: 4px; }
+        .reward-tag { font-size: 10px; background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 10px; display: inline-block; margin-top: 5px; }
 
-        /* WINNER PODIUM SECTION */
-        .podium-container {
-            display: flex; justify-content: center; align-items: flex-end; margin: 30px 0; gap: 10px;
-        }
-
-        .podium-item { text-align: center; position: relative; }
-        .podium-item.rank-1 { order: 2; transform: translateY(-20px); }
-        .podium-item.rank-2 { order: 1; }
-        .podium-item.rank-3 { order: 3; }
-
-        .podium-img {
-            width: 60px; height: 60px; border-radius: 50%; border: 3px solid var(--text-dim);
-            object-fit: cover; background: #333;
-        }
-        .rank-1 .podium-img { width: 90px; height: 90px; border-color: var(--gold); box-shadow: 0 0 20px rgba(255,202,40,0.3); }
-
-        .crown { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 20px; display: none; }
-        .rank-1 .crown { display: block; }
-
-        /* PROFILE STYLING */
-        .profile-header { text-align: center; background: var(--card); padding: 30px; border-radius: 30px; margin-bottom: 20px; }
-        .main-profile-img { width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--primary); object-fit: cover; }
-        
-        /* CARD LIST */
-        .list-item {
-            background: var(--card); padding: 15px; border-radius: 18px;
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
-        }
-
-        /* BUTTONS */
-        .btn-action {
-            background: linear-gradient(45deg, var(--primary), var(--accent));
-            color: white; border: none; padding: 15px; border-radius: 15px;
-            width: 100%; font-weight: 700; margin-top: 10px; cursor: pointer;
-        }
-
-        .score-big { font-size: 60px; font-weight: 800; color: var(--primary); text-align: center; margin: 20px 0; }
-        
-        input { width: 100%; padding: 12px; margin: 5px 0; border-radius: 12px; border: none; background: #2d303e; color: white; }
         .hidden { display: none; }
     </style>
 </head>
 <body>
 
+    <canvas id="particles"></canvas>
+
     <div class="app-container">
-        <div id="auth-section" class="tab-content active-tab" style="margin-top:50px;">
-            <h2 style="text-align:center;">✨ Love Clicker Pro</h2>
-            <div class="profile-header">
-                <input type="email" id="email" placeholder="Email">
-                <input type="password" id="password" placeholder="Password">
-                <input type="text" id="username" placeholder="Nama Panggilan">
-                <button class="btn-action" onclick="handleLogin()">MASUK</button>
-                <p onclick="handleRegister()" style="font-size:12px; color:var(--text-dim); cursor:pointer; margin-top:15px;">Belum punya akun? Daftar di sini</p>
+        <div class="timer-header hidden" id="top-timer">
+            🕒 RESET HADIAH DALAM: <span id="countdown">23:59:59</span>
+        </div>
+
+        <div id="tab-auth" class="tab-content active-tab">
+            <div style="text-align:center; padding-top:100px;">
+                <h1 style="font-size:40px; margin:0;">LOVE <span style="color:var(--primary)">CLICKER</span></h1>
+                <p style="color:#666;">High Performance Love Engine</p>
+                <div class="prize-card" style="margin-top:40px;">
+                    <input type="email" id="email" placeholder="Email" style="width:100%; background:rgba(255,255,255,0.05); border:none; padding:15px; border-radius:15px; color:white; margin-bottom:10px;">
+                    <input type="password" id="password" placeholder="Password" style="width:100%; background:rgba(255,255,255,0.05); border:none; padding:15px; border-radius:15px; color:white; margin-bottom:10px;">
+                    <input type="text" id="username" placeholder="Nama Panggilan" style="width:100%; background:rgba(255,255,255,0.05); border:none; padding:15px; border-radius:15px; color:white;">
+                    <button onclick="handleLogin()" style="width:100%; padding:15px; border-radius:15px; border:none; background:var(--primary); color:white; font-weight:800; margin-top:15px;">LOGIN</button>
+                    <button onclick="handleRegister()" style="width:100%; background:none; border:none; color:#777; margin-top:15px; font-size:12px;">DAFTAR AKUN BARU</button>
+                </div>
             </div>
         </div>
 
         <div id="tab-game" class="tab-content">
-            <h3 style="text-align:center;">Love Engine</h3>
-            <div class="score-big" id="score">0</div>
-            <div style="text-align:center; margin-bottom:40px;">
-                <button id="love-btn" style="background:none; border:none; font-size:100px; cursor:pointer;">💖</button>
+            <div style="text-align:center; padding-top:40px;">
+                <div class="main-score" id="score">0</div>
+                <p style="letter-spacing:5px; color:var(--primary); font-weight:800; font-size:12px;">LOVE ENERGY</p>
+                
+                <div style="margin:60px 0;">
+                    <button id="love-btn">💖</button>
+                </div>
+
+                <button onclick="saveScore()" style="width:100%; padding:18px; border-radius:20px; border:none; background:white; color:black; font-weight:800; box-shadow:0 10px 30px rgba(255,255,255,0.2);">💾 SIMPAN SKOR</button>
+                <button onclick="askQuestion()" style="margin-top:15px; background:none; border:none; color:#555; font-size:12px;">✨ CLAIM DAILY BONUS (+50)</button>
             </div>
-            <button class="btn-action" onclick="saveScore()">SIMPAN SKOR ONLINE</button>
-            <button class="btn-action" style="background:rgba(255,255,255,0.1);" onclick="askQuestion()">BONUS POIN (+50)</button>
         </div>
 
-        <div id="tab-leaderboard" class="tab-content">
-            <h3 style="text-align:center;">Top Lovers</h3>
+        <div id="tab-winner" class="tab-content">
+            <h2 style="text-align:center;">JUARA HARIAN</h2>
             
-            <div class="podium-container" id="podium-area">
-                <div class="podium-item rank-2">
-                    <img src="" id="p2-img" class="podium-img">
+            <div class="prize-card" style="text-align:center; font-size:12px; background:rgba(255,215,0,0.05); border-color:var(--gold);">
+                🎁 <b style="color:var(--gold)">DAFTAR HADIAH:</b><br>
+                Rank 1: 1.000.000 Coin | Rank 2: 100.000 Coin<br>
+                Rank 3: 50.000 Coin | Rank 4+: 5.000 Coin
+            </div>
+
+            <div class="podium">
+                <div class="p-item p-2">
+                    <img src="" id="p2-img" class="p-img">
                     <div id="p2-name" style="font-size:11px; margin-top:5px;">...</div>
+                    <div class="reward-tag">100K 💰</div>
                 </div>
-                <div class="podium-item rank-1">
+                <div class="p-item p-1">
                     <div class="crown">👑</div>
-                    <img src="" id="p1-img" class="podium-img">
-                    <div id="p1-name" style="font-size:13px; font-weight:700; margin-top:5px;">...</div>
+                    <img src="" id="p1-img" class="p-img">
+                    <div id="p1-name" style="font-size:14px; font-weight:800; margin-top:5px;">...</div>
+                    <div class="reward-tag" style="background:var(--gold); color:black;">1M 💰</div>
                 </div>
-                <div class="podium-item rank-3">
-                    <img src="" id="p3-img" class="podium-img">
+                <div class="p-item p-3">
+                    <img src="" id="p3-img" class="p-img">
                     <div id="p3-name" style="font-size:11px; margin-top:5px;">...</div>
+                    <div class="reward-tag">50K 💰</div>
                 </div>
             </div>
 
-            <div id="leaderboard-list">
-                </div>
+            <div id="rank-list" style="margin-top:30px;"></div>
         </div>
 
         <div id="tab-profile" class="tab-content">
-            <div class="profile-header">
-                <img src="" id="my-photo" class="main-profile-img">
-                <h2 id="display-name" style="margin:10px 0 0 0;">User</h2>
-                <p style="color:var(--text-dim); font-size:12px;">Love Member</p>
-                
-                <label style="color:var(--primary); font-size:12px; cursor:pointer;">
-                    <input type="file" id="file-input" accept="image/*" style="display:none;">
-                    📸 Ganti Foto Profil
-                </label>
-            </div>
+            <div style="text-align:center; padding-top:30px;">
+                <div style="position:relative; display:inline-block;">
+                    <img src="" id="my-photo" style="width:130px; height:130px; border-radius:50%; border:4px solid var(--primary); object-fit:cover;">
+                    <label style="position:absolute; bottom:0; right:0; background:var(--primary); padding:10px; border-radius:50%; cursor:pointer; font-size:15px;">
+                        📸<input type="file" id="file-input" accept="image/*" style="display:none;">
+                    </label>
+                </div>
+                <h2 id="display-name" style="margin:20px 0 5px 0;">User</h2>
+                <p style="color:#555; margin-bottom:40px;">Pro Love User</p>
 
-            <div class="list-item">
-                <span>Poin Saat Ini</span>
-                <b id="profile-score" style="color:var(--primary);">0</b>
+                <div style="background:var(--card); padding:20px; border-radius:25px; text-align:left;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+                        <span>Poin Tersimpan</span>
+                        <b style="color:var(--primary)" id="prof-score">0</b>
+                    </div>
+                    <button onclick="auth.signOut(); location.reload();" style="width:100%; padding:15px; border-radius:15px; border:1px solid #333; background:none; color:#ff4444; font-weight:700;">KELUAR AKUN</button>
+                </div>
             </div>
-            <button class="btn-action" style="background:#e63946;" onclick="auth.signOut(); location.reload();">LOGOUT</button>
         </div>
 
-        <div class="bottom-nav hidden" id="bottom-nav">
-            <div class="nav-item" onclick="switchTab('tab-game', this)">
-                <span class="nav-icon">🎮</span><span>Main</span>
-            </div>
-            <div class="nav-item" onclick="switchTab('tab-leaderboard', this)">
-                <span class="nav-icon">🏆</span><span>Peringkat</span>
-            </div>
-            <div class="nav-item" onclick="switchTab('tab-profile', this)">
-                <span class="nav-icon">👤</span><span>Profil</span>
-            </div>
+        <div class="bottom-nav hidden" id="navbar">
+            <div class="nav-item active" onclick="switchTab('tab-game', this)">🎮<span>Game</span></div>
+            <div class="nav-item" onclick="switchTab('tab-winner', this)">🏆<span>Winner</span></div>
+            <div class="nav-item" onclick="switchTab('tab-profile', this)">👤<span>Profil</span></div>
         </div>
     </div>
 
@@ -185,25 +202,45 @@
         let currentUser = null;
         let base64Image = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
 
-        function switchTab(tabId, el) {
+        // Switch Tab Engine
+        function switchTab(id, el) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active-tab');
+            document.getElementById(id).classList.add('active-tab');
             el.classList.add('active');
-            if(tabId === 'tab-leaderboard') loadLeaderboard();
+            if(id === 'tab-winner') loadLeaderboard();
         }
 
-        // Handle Photo Upload
+        // Timer Engine
+        function updateTimer() {
+            const now = new Date();
+            const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+            const diff = tomorrow - now;
+            const h = Math.floor(diff / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+            document.getElementById('countdown').innerText = 
+                `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        }
+        setInterval(updateTimer, 1000);
+
+        // Photo Upload Engine
         document.getElementById('file-input').addEventListener('change', function(e) {
             const file = e.target.files[0];
             const reader = new FileReader();
-            reader.onloadend = function() {
+            reader.onloadend = () => {
                 base64Image = reader.result;
                 document.getElementById('my-photo').src = base64Image;
-                alert("Foto terpilih! Jangan lupa SIMPAN di menu Main.");
             }
-            if (file) reader.readAsDataURL(file);
+            if(file) reader.readAsDataURL(file);
         });
+
+        // Firebase Logic
+        function handleLogin() {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            auth.signInWithEmailAndPassword(email, pass).catch(e => alert(e.message));
+        }
 
         function handleRegister() {
             const email = document.getElementById('email').value;
@@ -212,22 +249,17 @@
             auth.createUserWithEmailAndPassword(email, pass).then((u) => {
                 u.user.updateProfile({ displayName: name });
                 db.collection("users").doc(u.user.uid).set({ name: name, score: 0, photo: base64Image });
-                alert("Daftar Berhasil!");
+                alert("Sukses! Sekarang silakan Login.");
             }).catch(e => alert(e.message));
-        }
-
-        function handleLogin() {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            auth.signInWithEmailAndPassword(email, pass).catch(e => alert(e.message));
         }
 
         auth.onAuthStateChanged(user => {
             if (user) {
                 currentUser = user;
-                document.getElementById('auth-section').classList.remove('active-tab');
+                document.getElementById('tab-auth').classList.remove('active-tab');
                 document.getElementById('tab-game').classList.add('active-tab');
-                document.getElementById('bottom-nav').classList.remove('hidden');
+                document.getElementById('navbar').classList.remove('hidden');
+                document.getElementById('top-timer').classList.remove('hidden');
                 loadUserData();
             }
         });
@@ -244,7 +276,7 @@
                 currentScore = data.score || 0;
                 base64Image = data.photo || base64Image;
                 document.getElementById('score').innerText = currentScore;
-                document.getElementById('profile-score').innerText = currentScore;
+                document.getElementById('prof-score').innerText = currentScore;
                 document.getElementById('display-name').innerText = data.name;
                 document.getElementById('my-photo').src = base64Image;
             }
@@ -253,55 +285,77 @@
         async function saveScore() {
             await db.collection("users").doc(currentUser.uid).set({ 
                 name: document.getElementById('display-name').innerText, 
-                score: currentScore,
-                photo: base64Image
+                score: currentScore, photo: base64Image
             }, { merge: true });
-            alert("Skor & Foto Berhasil Disinkron!");
-            loadLeaderboard();
+            alert("SKOR TERKIRIM KE CLOUD!");
         }
 
         function askQuestion() {
-            let q = prompt("Ketik 'sayang' untuk bonus:");
-            if(q && q.toLowerCase() === "sayang") {
+            let q = prompt("Ketik 'SAYANG' (Kapital):");
+            if(q === "SAYANG") {
                 currentScore += 50;
                 document.getElementById('score').innerText = currentScore;
             }
         }
 
         async function loadLeaderboard() {
-            const snapshot = await db.collection("users").orderBy("score", "desc").limit(15).get();
-            let html = "";
+            const snap = await db.collection("users").orderBy("score", "desc").limit(10).get();
             let players = [];
-            snapshot.forEach(doc => players.push(doc.data()));
+            snap.forEach(d => players.push(d.data()));
 
-            // Update Podium (3 Besar)
-            if(players[0]) {
-                document.getElementById('p1-img').src = players[0].photo;
-                document.getElementById('p1-name').innerText = players[0].name;
-            }
-            if(players[1]) {
-                document.getElementById('p2-img').src = players[1].photo;
-                document.getElementById('p2-name').innerText = players[1].name;
-            }
-            if(players[2]) {
-                document.getElementById('p3-img').src = players[2].photo;
-                document.getElementById('p3-name').innerText = players[2].name;
-            }
+            // Podium Juara
+            if(players[0]) { document.getElementById('p1-img').src = players[0].photo; document.getElementById('p1-name').innerText = players[0].name; }
+            if(players[1]) { document.getElementById('p2-img').src = players[1].photo; document.getElementById('p2-name').innerText = players[1].name; }
+            if(players[2]) { document.getElementById('p3-img').src = players[2].photo; document.getElementById('p3-name').innerText = players[2].name; }
 
-            // Update List Sisa
-            for(let i = 3; i < players.length; i++) {
+            // List Sisa
+            let html = "";
+            for(let i=3; i<players.length; i++) {
                 html += `
-                <div class="list-item">
+                <div style="background:var(--card); padding:15px; border-radius:15px; display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                     <div style="display:flex; align-items:center;">
-                        <span style="margin-right:15px; color:var(--text-dim);">${i+1}</span>
+                        <span style="color:#555; margin-right:15px; font-weight:800;">#${i+1}</span>
                         <img src="${players[i].photo}" style="width:35px; height:35px; border-radius:50%; margin-right:10px; object-fit:cover;">
                         <b>${players[i].name}</b>
                     </div>
-                    <b>${players[i].score}</b>
+                    <div style="text-align:right;">
+                        <div style="font-weight:800;">${players[i].score}</div>
+                        <div style="font-size:9px; color:#555;">Prize: 5.000 💰</div>
+                    </div>
                 </div>`;
             }
-            document.getElementById('leaderboard-list').innerHTML = html;
+            document.getElementById('rank-list').innerHTML = html;
         }
+
+        // Particle Engine Logic
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        let particles = [];
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2;
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.speedY = Math.random() * 0.5 - 0.25;
+            }
+            update() {
+                this.x += this.speedX; this.y += this.speedY;
+                if (this.x > canvas.width) this.x = 0; if (this.y > canvas.height) this.y = 0;
+            }
+            draw() {
+                ctx.fillStyle = 'rgba(255,255,255,0.2)'; ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+            }
+        }
+        for(let i=0; i<50; i++) particles.push(new Particle());
+        function animate() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+        animate();
     </script>
 </body>
     </html>
